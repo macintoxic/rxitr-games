@@ -24,9 +24,15 @@
 #define LANG_EN 1
 #define LANG_FR 2
 
+#define TILE_LEFT_ARROW background_Map[1022]
+#define TILE_RIGHT_ARROW background_Map[1023]
+
+
 typedef struct
   {
     void (*menu)(void);
+    void (*options)(void);
+    void (*optionsValues)(u8 * options, u8 selectedOption);
     void (*gameover)(void);
     void (*levelcomplete)(void);
     void (*score)(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
@@ -41,6 +47,8 @@ typedef struct
 void initLang(l18n * messages);
 
 void msg_menu_en(void);
+void msg_options_en(void);
+void msg_optionsValues_en(u8 * options, u8 selectedOption);
 void msg_gameover_en(void);
 void msg_levelcomplete_en(void);
 void msg_score_en(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
@@ -51,6 +59,8 @@ void msg_highscores_en(u8 blink, score * highscores);
 void msg_newhighscore_en(void);
 
 void msg_menu_fr(void);
+void msg_options_fr(void);
+void msg_optionsValues_fr(u8 * options, u8 selectedOption);
 void msg_gameover_fr(void);
 void msg_levelcomplete_fr(void);
 void msg_score_fr(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
