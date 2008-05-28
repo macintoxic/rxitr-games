@@ -962,8 +962,8 @@ void initLevel(u8 level)
     PA_EasyBgLoad(0, 1, background);
     PA_EasyBgScrollXY(0, 1, 0, 0);
 
-    PA_InitCustomText(0, 0, newfont);
-    PA_InitCustomText(1, 0, newfont);
+    PA_InitCustomText(0, 0, customfont);
+    PA_InitCustomText(1, 0, customfont);
     
     messages.title();
     messages.score(level, lives, complete, timeLeft, (levelScore + totalScore + 5) / 10, (bonus + 5) / 10);
