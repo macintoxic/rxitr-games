@@ -29,6 +29,8 @@ void initLang(l18n * messages)
     case LANG_FR:
       PA_OutputText(1, 0, 0, "chargement...");
       messages->menu = &msg_menu_fr;
+      messages->options = &msg_options_fr;
+      messages->optionsValues = &msg_optionsValues_fr;
       messages->gameover = &msg_gameover_fr;
       messages->levelcomplete = &msg_levelcomplete_fr;
       messages->score = &msg_score_fr;
@@ -42,6 +44,8 @@ void initLang(l18n * messages)
     default:
       PA_OutputText(1, 0, 0, "loading...");
       messages->menu = &msg_menu_en;
+      messages->options = &msg_options_en;
+      messages->optionsValues = &msg_optionsValues_en;
       messages->gameover = &msg_gameover_en;
       messages->levelcomplete = &msg_levelcomplete_en;
       messages->score = &msg_score_en;
@@ -79,6 +83,76 @@ void msg_menu_fr(void)
     PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_menu);
     PA_ShowBg(0, 0);
+  }
+
+void msg_options_en(void)
+  {
+    PA_ClearBg(0, 0);
+    PA_EasyBgLoad(0, 1, msg_en_options);
+    PA_ShowBg(0, 0);
+  }
+
+void msg_options_fr(void)
+  {
+    PA_ClearBg(0, 0);
+    PA_EasyBgLoad(0, 1, msg_en_options);
+    PA_ShowBg(0, 0);
+  }
+
+void msg_optionsValues_en(u8 * options, u8 selectedOption)
+  {
+    PA_OutputText(0, 2, 5, "Sound:             %s        %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
+    switch (options[OPTION_SOUNDFX])
+      {
+    case OPTIONVALUE_SOUNDFX_YES:
+      PA_OutputText(0, 23, 5, "%s", "Yes");
+      break;
+    case OPTIONVALUE_SOUNDFX_NO:
+      PA_OutputText(0, 23, 5, "%s", "No");
+      break;
+      }
+    
+    PA_OutputText(0, 2, 7, "Speed:             %s        %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
+    switch (options[OPTION_SPEED])
+      {
+    case OPTIONVALUE_SPEED_SLOW:
+      PA_OutputText(0, 23, 7, "%s", "Slow");
+      break;
+    case OPTIONVALUE_SPEED_MEDIUM:
+      PA_OutputText(0, 23, 7, "%s", "Medium");
+      break;
+    case OPTIONVALUE_SPEED_FAST:
+      PA_OutputText(0, 23, 7, "%s", "Fast");
+      break;
+      }
+  }
+
+void msg_optionsValues_fr(u8 * options, u8 selectedOption)
+  {
+    PA_OutputText(0, 2, 5, "Son:               %s        %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
+    switch (options[OPTION_SOUNDFX])
+      {
+    case OPTIONVALUE_SOUNDFX_YES:
+      PA_OutputText(0, 23, 5, "%s", "Oui");
+      break;
+    case OPTIONVALUE_SOUNDFX_NO:
+      PA_OutputText(0, 23, 5, "%s", "Non");
+      break;
+      }
+    
+    PA_OutputText(0, 2, 7, "Vitesse:           %s        %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
+    switch (options[OPTION_SPEED])
+      {
+    case OPTIONVALUE_SPEED_SLOW:
+      PA_OutputText(0, 23, 7, "%s", "Lent");
+      break;
+    case OPTIONVALUE_SPEED_MEDIUM:
+      PA_OutputText(0, 23, 7, "%s", "Moyen");
+      break;
+    case OPTIONVALUE_SPEED_FAST:
+      PA_OutputText(0, 23, 7, "%s", "Rapide");
+      break;
+      }
   }
 
 void msg_gameover_fr(void)

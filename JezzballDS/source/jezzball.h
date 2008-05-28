@@ -20,6 +20,7 @@
 
 // save
 #define MAX_NAME_LEN 15
+#define NB_OPTIONS 10
 #define NB_HIGHSCORES 10
 #define SAVE_SIGNATURE "JezzballDS"
 
@@ -43,6 +44,20 @@
 #define MENU_OPTIONS 1
 #define MENU_ABOUT 2
 
+#define OPTION_SOUNDFX 0
+#define OPTION_SPEED 1
+
+#define OPTIONVALUE_SOUNDFX_NO 0
+#define OPTIONVALUE_SOUNDFX_YES 1 // default
+
+#define OPTIONMODULO_SOUNDFX 2
+
+#define OPTIONVALUE_SPEED_SLOW 0
+#define OPTIONVALUE_SPEED_MEDIUM 1 // default
+#define OPTIONVALUE_SPEED_FAST 2
+
+#define OPTIONMODULO_SPEED 3
+
 typedef struct
   {
     u32 score;
@@ -52,7 +67,7 @@ typedef struct
 
 typedef struct
   {
-    u8 options[10];
+    u8 options[NB_OPTIONS];
     score highscores[NB_HIGHSCORES];
   } save;
 

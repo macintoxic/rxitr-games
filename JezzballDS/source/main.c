@@ -35,7 +35,8 @@
 #include "jezzball.h"
 
 void loadSaveData(void);
-void saveSRAM(void);
+void writeSaveData(void);
+void initDefaultOptions(u8 * options);
 void initBalls(void);
 void moveBalls(void);
 void initWbd(void);
@@ -51,9 +52,11 @@ void destroyWbd(void);
 void promptHighscore(void);
 void checkIfWin(void);
 void updateCurrentMenu(void);
+void updateSpeed(void);
 
 void menu(void);
 void menuPlay(void);
+void menuOptions(void);
 void menuAbout(void);
 
 void play(void);
@@ -90,7 +93,7 @@ u16 time4lvl;
 s16 timeLeft;
 
 u8 language;
-u8 inPause = 0, complete = 0, gameover = 0, levelComplete = 0, inMenu = 0, currentMenuItem = 0;
+u8 inPause = 0, complete = 0, gameover = 0, levelComplete = 0, inMenu = 0, currentMenuItem = 0, libfatOK = 0;
 
 u16 tilesToClear;
 
@@ -112,7 +115,7 @@ int main(int argc, char ** argv)
     
     initLang(&messages);
     
-    fatInitDefault();
+    libfatOK = fatInitDefault();
     
     PA_SetBrightness(0, -31);
     PA_SetBrightness(1, -31);
@@ -204,12 +207,18 @@ void setPause(bool pause)
       }
   }
 
+void initDefaultOptions(u8 * options)
+  {
+    options[OPTION_SOUNDFX] = OPTIONVALUE_SOUNDFX_YES;
+    options[OPTION_SPEED] = OPTIONVALUE_SPEED_MEDIUM;
+  }
+
 void menu(void)
   {
     if (Pad.Newpress.Up || Pad.Newpress.Down)
       {
         currentMenuItem += 3 + Pad.Newpress.Down - Pad.Newpress.Up;
-        currentMenuItem = currentMenuItem%3;
+        currentMenuItem %= 3;
         updateCurrentMenu();
       }
     if (Stylus.Newpress && Stylus.X >= 72 && Stylus.X <= 184)
@@ -222,7 +231,9 @@ void menu(void)
           }
         else if (Stylus.Newpress && Stylus.Y >= 72 && Stylus.Y <= 96)
           {
-            currentMenuItem = 1;
+            if (currentMenuItem == MENU_OPTIONS)
+              menuOptions();
+            currentMenuItem = MENU_OPTIONS;
           }
         else if (Stylus.Newpress && Stylus.Y >= 120 && Stylus.Y <= 144)
           {
@@ -239,6 +250,9 @@ void menu(void)
         case MENU_PLAY :
           menuPlay();
           break;
+        case MENU_OPTIONS :
+          menuOptions();
+          break;
         case MENU_ABOUT :
           menuAbout();
           break;
@@ -254,6 +268,61 @@ void menuPlay(void)
     initLevel(level = 1);
     fadeIn(1,1);
     PA_VBLCounterStart(0);
+  }
+
+void menuOptions(void)
+  {
+    u8 optionsCopy[NB_OPTIONS];
+    u8 i, selectedOption;
+    destroyBalls();
+    
+    for (i=0; i<NB_OPTIONS; i++)
+      optionsCopy[i] = saveData.options[i];
+    
+    selectedOption = 0;
+    PA_InitCustomText(0, 0, customfont);
+    messages.options();
+    messages.optionsValues(optionsCopy, selectedOption);
+    
+    PA_WaitForVBL();
+    while (1)
+      {
+        if (Pad.Newpress.Up || Pad.Newpress.Down)
+          {
+            selectedOption += 2 + Pad.Newpress.Down - Pad.Newpress.Up;
+            selectedOption %= 2;
+            messages.optionsValues(optionsCopy, selectedOption);
+          }
+        else if (Pad.Newpress.Left || Pad.Newpress.Right)
+          {
+            switch (selectedOption)
+              {
+            case OPTION_SOUNDFX :
+              optionsCopy[selectedOption] += OPTIONMODULO_SOUNDFX + Pad.Newpress.Right - Pad.Newpress.Left;
+              optionsCopy[selectedOption] %= OPTIONMODULO_SOUNDFX;
+              break;
+            case OPTION_SPEED :
+              optionsCopy[selectedOption] += OPTIONMODULO_SPEED + Pad.Newpress.Right - Pad.Newpress.Left;
+              optionsCopy[selectedOption] %= OPTIONMODULO_SPEED;
+              break;
+              }
+            messages.optionsValues(optionsCopy, selectedOption);
+          }
+        else if (Pad.Newpress.A)
+          {
+            for (i=0; i<NB_OPTIONS; i++)
+              saveData.options[i] = optionsCopy[i];
+            writeSaveData();
+            break;
+          }
+        else if (Pad.Newpress.B)
+          {
+            break;
+          }
+        
+        PA_WaitForVBL();
+      }
+    initMenu();
   }
 
 void menuAbout(void)
@@ -337,7 +406,7 @@ void promptHighscore(void)
                     else if ((letter == '\n' && nletter) || Pad.Newpress.A)
                       { // Enter pressed
                         typing = 0;
-                        saveSRAM();
+                        writeSaveData();
                       }
                     if (nletter >= MAX_NAME_LEN)
                       nletter = MAX_NAME_LEN - 1;
@@ -358,23 +427,69 @@ void promptHighscore(void)
 
 void loadSaveData(void)
   {
-    int fd, ret;
-    fd = open("JezzballDS.dat", O_RDONLY|O_CREAT);
-    if (fd)
+    char signature[sizeof(SAVE_SIGNATURE)];
+    int fd, ret = 0;
+    if (libfatOK)
       {
-        ret = read(fd, &saveData, sizeof(saveData));
-        close(fd);
+        fd = open("JezzballDS.dat", O_RDONLY);
+        if (fd)
+          {
+            ret = read(fd, signature, sizeof(signature));
+            if (!PA_CompareText(signature, SAVE_SIGNATURE))
+              ret = 0;
+            else
+              ret = read(fd, &saveData, sizeof(saveData));
+            close(fd);
+          }
       }
+    if (!ret)
+      {
+        u8 i, j;
+        initDefaultOptions(saveData.options);
+        for (i=0; i<NB_HIGHSCORES; i++)
+        {
+          for (j=0; j<MAX_NAME_LEN; j++)
+            saveData.highscores[i].name[j] = ' ';
+          saveData.highscores[i].name[MAX_NAME_LEN] = '\0';
+          saveData.highscores[i].level = 0;
+          saveData.highscores[i].score = 0;
+        }
+      }
+    
+    updateSpeed();
   }
 
-void saveSRAM(void)
+void writeSaveData(void)
   {
-    int fd, ret;
-    fd = open("JezzballDS.dat", O_WRONLY|O_CREAT);
-    if (fd)
+    int fd = 0, ret;
+    if (libfatOK)
       {
-        ret = write(fd, &saveData, sizeof(saveData));
-        close(fd);
+        fd = open("JezzballDS.dat", O_WRONLY|O_CREAT);
+        if (fd)
+          {
+            ret = write(fd, SAVE_SIGNATURE, sizeof(SAVE_SIGNATURE));
+            ret = write(fd, &saveData, sizeof(saveData));
+            close(fd);
+          }
+      }
+    
+    updateSpeed();
+  }
+
+void updateSpeed(void)
+  {
+    switch (saveData.options[OPTION_SPEED])
+      {
+    case OPTIONVALUE_SPEED_SLOW :
+      speed = 128;
+      break;
+    case OPTIONVALUE_SPEED_MEDIUM :
+      speed = 192;
+      break;
+    case OPTIONVALUE_SPEED_FAST :
+    default :
+      speed = 256;
+      break;
       }
   }
 
@@ -458,7 +573,7 @@ void moveBalls(void)
 
         if (top == TILE_CLEARED || bottom == TILE_CLEARED || right == TILE_CLEARED || left == TILE_CLEARED)
           {
-            if (!bouncePlayed)
+            if (!bouncePlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
               {
                 PA_PlaySimpleSound(PA_GetFreeSoundChannel(), bounce);
                 bouncePlayed = 1;
@@ -475,7 +590,7 @@ void moveBalls(void)
               }
             fillWall(&blueWall, TILE_DEFAULT, SPRITE_BLUE);
             
-            if (!jezzdeadPlayed)
+            if (!jezzdeadPlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
               {
                 PA_PlaySimpleSound(PA_GetFreeSoundChannel(), jezzdead);
                 jezzdeadPlayed = 1;
@@ -491,7 +606,7 @@ void moveBalls(void)
               }
             fillWall(&redWall, TILE_DEFAULT, SPRITE_RED);
             
-            if (!jezzdeadPlayed)
+            if (!jezzdeadPlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
               {
                 PA_PlaySimpleSound(PA_GetFreeSoundChannel(), jezzdead);
                 jezzdeadPlayed = 1;
@@ -559,7 +674,7 @@ void moveBalls(void)
                 balls[j].xdirection = -(balls[i].xdirection);
                 balls[j].ydirection = -(balls[i].ydirection);
                 
-                if (!bouncePlayed)
+                if (!bouncePlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
                   {
                     PA_PlaySimpleSound(PA_GetFreeSoundChannel(), bounce);
                     bouncePlayed = 1;
