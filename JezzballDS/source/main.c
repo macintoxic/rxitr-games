@@ -271,10 +271,10 @@ void play(void)
     moveWbd();
     
     buildWall(&blueWall, wbd.angle%2 ? 0 : -1,
-        wbd.angle%2 ? -1 : 0, TILE_BLUE, SPRITE_BLUE);
+        wbd.angle%2 ? 1 : 0, TILE_BLUE, SPRITE_BLUE);
     
     buildWall(&redWall, wbd.angle%2 ? 0 : 1,
-        wbd.angle%2 ? 1 : 0, TILE_RED, SPRITE_RED);
+        wbd.angle%2 ? -1 : 0, TILE_RED, SPRITE_RED);
     
     timeLeft = time4lvl - (u32) (((double) ((PA_VBLCounter[0] * speed)>>8)) / 6.);
     if (timeLeft <= 0)
@@ -360,16 +360,22 @@ void loadSaveData(void)
   {
     int fd, ret;
     fd = open("JezzballDS.dat", O_RDONLY|O_CREAT);
-    ret = read(fd, &saveData, sizeof(saveData));
-    close(fd);
+    if (fd)
+      {
+        ret = read(fd, &saveData, sizeof(saveData));
+        close(fd);
+      }
   }
 
 void saveSRAM(void)
   {
     int fd, ret;
     fd = open("JezzballDS.dat", O_WRONLY|O_CREAT);
-    ret = write(fd, &saveData, sizeof(saveData));
-    close(fd);
+    if (fd)
+      {
+        ret = write(fd, &saveData, sizeof(saveData));
+        close(fd);
+      }
   }
 
 u16 checkCollision(s16 x, s16 y)
@@ -1009,20 +1015,14 @@ void initMenu(void)
     
     PA_ResetBgSys();
 
-    PA_InitCustomText(0, 0, newfont);
-    PA_InitCustomText(1, 0, newfont);
-    
-    messages.title();
-    messages.highscores(-1, saveData.highscores);
-    
-    u8 i;
-
-    PA_ClearBg(0, 0);
+    PA_InitCustomText(0, 0, customfont);
+    PA_InitCustomText(1, 0, customfont);
     
     messages.menu();
+    messages.highscores(-1, saveData.highscores);
     
     nbBalls = 2;
-    
+    u8 i;
     for (i=0; i<nbBalls; i++)
       {
         PA_CreateSprite(0, i, (void*) ball_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
