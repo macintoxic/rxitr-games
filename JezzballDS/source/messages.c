@@ -23,11 +23,9 @@
 
 void initLang(l18n * messages)
   {
-    PA_InitText(1, 0);
     switch (PA_UserInfo.Language)
       {
     case LANG_FR:
-      PA_OutputText(1, 0, 0, "chargement...");
       messages->menu = &msg_menu_fr;
       messages->options = &msg_options_fr;
       messages->optionsValues = &msg_optionsValues_fr;
@@ -42,7 +40,6 @@ void initLang(l18n * messages)
       messages->newhighscore = &msg_newhighscore_fr;
       break;
     default:
-      PA_OutputText(1, 0, 0, "loading...");
       messages->menu = &msg_menu_en;
       messages->options = &msg_options_en;
       messages->optionsValues = &msg_optionsValues_en;

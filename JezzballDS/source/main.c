@@ -99,6 +99,7 @@ u16 tilesToClear;
 
 save saveData;
 
+u8 name[21];
 
 l18n messages;
 
@@ -110,12 +111,26 @@ int main(int argc, char ** argv)
     height = background_Info[BG_INFO_HEIGHT]>>3;
     
     PA_Init();
+    
+    PA_EasyBgLoad(0, 0, LGPL);
+    PA_EasyBgLoad(1, 0, rxitrgames);
+    
+    u8 nletter;
+    for (nletter=0; nletter<MAX_NAME_LEN && PA_UserInfo.Name[nletter] != '\0'; nletter++)
+      name[nletter] = PA_UserInfo.Name[nletter];
+    name[MAX_NAME_LEN] = '\0';
+    
+    PA_VBLCounterStart(0);
+    
     PA_InitVBL();
     PA_InitSound();
     
     initLang(&messages);
     
     libfatOK = fatInitDefault();
+    
+    PA_WaitFor(PA_VBLCounter[0] > 180);
+    PA_WaitFor(Pad.Newpress.Anykey || Stylus.Newpress || PA_VBLCounter[0] > 600);
     
     PA_SetBrightness(0, -31);
     PA_SetBrightness(1, -31);
@@ -151,7 +166,7 @@ int main(int argc, char ** argv)
               {
                 switchPause();
               }
-            if (PA_LidClosed())
+            if (!levelComplete && PA_LidClosed())
               {
                 setPause(true);
               }
@@ -380,8 +395,8 @@ void promptHighscore(void)
                 PA_InitCustomKeyboard(0, keyboardcustom);
                 PA_KeyboardIn(24, 95);
                 
-                for (nletter=0; nletter<MAX_NAME_LEN && PA_UserInfo.Name[nletter] != '\0'; nletter++)
-                  saveData.highscores[i].name[nletter] = PA_UserInfo.Name[nletter];
+                for (nletter=0; nletter<MAX_NAME_LEN && name[nletter] != '\0'; nletter++)
+                  saveData.highscores[i].name[nletter] = name[nletter];
                 len = nletter;
                 for (; nletter<MAX_NAME_LEN; nletter++)
                   saveData.highscores[i].name[nletter] = ' ';
@@ -395,13 +410,13 @@ void promptHighscore(void)
                     letter = PA_CheckKeyboard();
                     if (letter > 31)
                       { // there is a new letter
-                        saveData.highscores[i].name[nletter] = letter;
+                        name[nletter] = saveData.highscores[i].name[nletter] = letter;
                         nletter++;
                       }
                     else if ((letter == PA_BACKSPACE) && nletter)
                       { // Backspace pressed
                         nletter--;
-                        saveData.highscores[i].name[nletter] = ' '; // Erase the last letter
+                        name[nletter] = saveData.highscores[i].name[nletter] = ' '; // Erase the last letter
                       }
                     else if ((letter == '\n' && nletter) || Pad.Newpress.A)
                       { // Enter pressed
