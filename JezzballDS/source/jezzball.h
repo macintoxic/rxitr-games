@@ -20,9 +20,8 @@
 
 // save
 #define MAX_NAME_LEN 15
-#define NB_OPTIONS 10
 #define NB_HIGHSCORES 10
-#define SAVE_SIGNATURE "JezzballDS"
+#define SAVE_SIGNATURE "JezzballDS_1.1.0"
 
 
 #define BG_INFO_TYPE 0
@@ -44,19 +43,37 @@
 #define MENU_OPTIONS 1
 #define MENU_ABOUT 2
 
-#define OPTION_SOUNDFX 0
-#define OPTION_SPEED 1
+// Options {
+enum E_OPTIONS
+  {
+     OPTION_SOUNDFX
+    ,OPTION_SPEED
+    ,OPTION_BALLS
+    ,OPTIONS_COUNT
+  };
 
-#define OPTIONVALUE_SOUNDFX_NO 0
-#define OPTIONVALUE_SOUNDFX_YES 1 // default
+enum E_OPTIONS_SOUNDFX
+  {
+     OPTION_SOUNDFX_YES
+    ,OPTION_SOUNDFX_NO
+    ,OPTIONS_SOUNDFX_COUNT
+  };
 
-#define OPTIONMODULO_SOUNDFX 2
+enum E_OPTIONS_SPEED
+  {
+     OPTION_SPEED_SLOW
+    ,OPTION_SPEED_MEDIUM
+    ,OPTION_SPEED_FAST
+    ,OPTIONS_SPEED_COUNT
+  };
 
-#define OPTIONVALUE_SPEED_SLOW 0
-#define OPTIONVALUE_SPEED_MEDIUM 1 // default
-#define OPTIONVALUE_SPEED_FAST 2
-
-#define OPTIONMODULO_SPEED 3
+enum E_OPTIONS_BALLS
+  {
+     OPTION_BALLS_CLASSIC
+    ,OPTION_BALLS_SMILEY
+    ,OPTIONS_BALLS_COUNT
+  };
+// } Options
 
 typedef struct
   {
@@ -67,7 +84,7 @@ typedef struct
 
 typedef struct
   {
-    u8 options[NB_OPTIONS];
+    u8 options[OPTIONS_COUNT];
     score highscores[NB_HIGHSCORES];
   } save;
 

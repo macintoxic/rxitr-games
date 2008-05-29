@@ -98,56 +98,78 @@ void msg_options_fr(void)
 
 void msg_optionsValues_en(u8 * options, u8 selectedOption)
   {
-    PA_OutputText(0, 2, 5, "Sound:             %s        %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
-    switch (options[OPTION_SOUNDFX])
+    PA_OutputText(0, 2, 5, "Sound:          %s           %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
+    switch ((enum E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
       {
-    case OPTIONVALUE_SOUNDFX_YES:
-      PA_OutputText(0, 23, 5, "%s", "Yes");
+    case OPTION_SOUNDFX_YES: default:
+      PA_OutputText(0, 20, 5, "%s", "Yes");
       break;
-    case OPTIONVALUE_SOUNDFX_NO:
-      PA_OutputText(0, 23, 5, "%s", "No");
+    case OPTION_SOUNDFX_NO:
+      PA_OutputText(0, 20, 5, "%s", "No");
       break;
       }
     
-    PA_OutputText(0, 2, 7, "Speed:             %s        %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
-    switch (options[OPTION_SPEED])
+    PA_OutputText(0, 2, 7, "Speed:          %s           %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
+    switch ((enum E_OPTIONS_SPEED) options[OPTION_SPEED])
       {
-    case OPTIONVALUE_SPEED_SLOW:
-      PA_OutputText(0, 23, 7, "%s", "Slow");
+    case OPTION_SPEED_SLOW:
+      PA_OutputText(0, 20, 7, "%s", "Slow");
       break;
-    case OPTIONVALUE_SPEED_MEDIUM:
-      PA_OutputText(0, 23, 7, "%s", "Medium");
+    case OPTION_SPEED_MEDIUM: default:
+      PA_OutputText(0, 20, 7, "%s", "Medium");
       break;
-    case OPTIONVALUE_SPEED_FAST:
-      PA_OutputText(0, 23, 7, "%s", "Fast");
+    case OPTION_SPEED_FAST:
+      PA_OutputText(0, 20, 7, "%s", "Fast");
+      break;
+      }
+    
+    PA_OutputText(0, 2, 9, "Balls:          %s           %s", selectedOption == OPTION_BALLS ? "<" : " ", selectedOption == OPTION_BALLS ? ">" : " ");
+    switch ((enum E_OPTIONS_BALLS) options[OPTION_BALLS])
+      {
+    case OPTION_BALLS_CLASSIC: default:
+      PA_OutputText(0, 20, 9, "%s", "Classic");
+      break;
+    case OPTION_BALLS_SMILEY:
+      PA_OutputText(0, 20, 9, "%s", "Smiley");
       break;
       }
   }
 
 void msg_optionsValues_fr(u8 * options, u8 selectedOption)
   {
-    PA_OutputText(0, 2, 5, "Son:               %s        %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
-    switch (options[OPTION_SOUNDFX])
+    PA_OutputText(0, 2, 5, "Son:            %s           %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
+    switch ((enum E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
       {
-    case OPTIONVALUE_SOUNDFX_YES:
-      PA_OutputText(0, 23, 5, "%s", "Oui");
+    case OPTION_SOUNDFX_YES: default:
+      PA_OutputText(0, 20, 5, "%s", "Oui");
       break;
-    case OPTIONVALUE_SOUNDFX_NO:
-      PA_OutputText(0, 23, 5, "%s", "Non");
+    case OPTION_SOUNDFX_NO:
+      PA_OutputText(0, 20, 5, "%s", "Non");
       break;
       }
     
-    PA_OutputText(0, 2, 7, "Vitesse:           %s        %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
-    switch (options[OPTION_SPEED])
+    PA_OutputText(0, 2, 7, "Vitesse:        %s           %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
+    switch ((enum E_OPTIONS_SPEED) options[OPTION_SPEED])
       {
-    case OPTIONVALUE_SPEED_SLOW:
-      PA_OutputText(0, 23, 7, "%s", "Lent");
+    case OPTION_SPEED_SLOW:
+      PA_OutputText(0, 20, 7, "%s", "Lent");
       break;
-    case OPTIONVALUE_SPEED_MEDIUM:
-      PA_OutputText(0, 23, 7, "%s", "Moyen");
+    case OPTION_SPEED_MEDIUM: default:
+      PA_OutputText(0, 20, 7, "%s", "Moyen");
       break;
-    case OPTIONVALUE_SPEED_FAST:
-      PA_OutputText(0, 23, 7, "%s", "Rapide");
+    case OPTION_SPEED_FAST:
+      PA_OutputText(0, 20, 7, "%s", "Rapide");
+      break;
+      }
+    
+    PA_OutputText(0, 2, 9, "Balles:         %s           %s", selectedOption == OPTION_BALLS ? "<" : " ", selectedOption == OPTION_BALLS ? ">" : " ");
+    switch ((enum E_OPTIONS_BALLS) options[OPTION_BALLS])
+      {
+    case OPTION_BALLS_CLASSIC: default:
+      PA_OutputText(0, 20, 9, "%s", "Classique");
+      break;
+    case OPTION_BALLS_SMILEY:
+      PA_OutputText(0, 20, 9, "%s", "Smiley");
       break;
       }
   }
