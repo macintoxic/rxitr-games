@@ -224,8 +224,9 @@ void setPause(bool pause)
 
 void initDefaultOptions(u8 * options)
   {
-    options[OPTION_SOUNDFX] = OPTIONVALUE_SOUNDFX_YES;
-    options[OPTION_SPEED] = OPTIONVALUE_SPEED_MEDIUM;
+    options[OPTION_SOUNDFX] = OPTION_SOUNDFX_YES;
+    options[OPTION_SPEED] = OPTION_SPEED_MEDIUM;
+    options[OPTION_BALLS] = OPTION_BALLS_CLASSIC;
   }
 
 void menu(void)
@@ -287,46 +288,46 @@ void menuPlay(void)
 
 void menuOptions(void)
   {
-    u8 optionsCopy[NB_OPTIONS];
-    u8 i, selectedOption;
+    u8 optionsCopy[OPTIONS_COUNT];
+    enum E_OPTIONS option;
     destroyBalls();
     
-    for (i=0; i<NB_OPTIONS; i++)
-      optionsCopy[i] = saveData.options[i];
+    for (option=0; option<OPTIONS_COUNT; option++)
+      optionsCopy[option] = saveData.options[option];
     
-    selectedOption = 0;
+    option = 0;
     PA_InitCustomText(0, 0, customfont);
     messages.options();
-    messages.optionsValues(optionsCopy, selectedOption);
+    messages.optionsValues(optionsCopy, option);
     
     PA_WaitForVBL();
     while (1)
       {
         if (Pad.Newpress.Up || Pad.Newpress.Down)
           {
-            selectedOption += 2 + Pad.Newpress.Down - Pad.Newpress.Up;
-            selectedOption %= 2;
-            messages.optionsValues(optionsCopy, selectedOption);
+            option += OPTIONS_COUNT + Pad.Newpress.Down - Pad.Newpress.Up;
+            option %= OPTIONS_COUNT;
+            messages.optionsValues(optionsCopy, option);
           }
         else if (Pad.Newpress.Left || Pad.Newpress.Right)
           {
-            switch (selectedOption)
+            switch (option)
               {
-            case OPTION_SOUNDFX :
-              optionsCopy[selectedOption] += OPTIONMODULO_SOUNDFX + Pad.Newpress.Right - Pad.Newpress.Left;
-              optionsCopy[selectedOption] %= OPTIONMODULO_SOUNDFX;
+            case OPTION_SOUNDFX : default :
+              optionsCopy[option] += OPTIONS_SOUNDFX_COUNT + Pad.Newpress.Right - Pad.Newpress.Left;
+              optionsCopy[option] %= OPTIONS_SOUNDFX_COUNT;
               break;
             case OPTION_SPEED :
-              optionsCopy[selectedOption] += OPTIONMODULO_SPEED + Pad.Newpress.Right - Pad.Newpress.Left;
-              optionsCopy[selectedOption] %= OPTIONMODULO_SPEED;
+              optionsCopy[option] += OPTIONS_SPEED_COUNT + Pad.Newpress.Right - Pad.Newpress.Left;
+              optionsCopy[option] %= OPTIONS_SPEED_COUNT;
               break;
               }
-            messages.optionsValues(optionsCopy, selectedOption);
+            messages.optionsValues(optionsCopy, option);
           }
         else if (Pad.Newpress.A)
           {
-            for (i=0; i<NB_OPTIONS; i++)
-              saveData.options[i] = optionsCopy[i];
+            for (option=0; option<OPTIONS_COUNT; option++)
+              saveData.options[option] = optionsCopy[option];
             writeSaveData();
             break;
           }
@@ -337,6 +338,8 @@ void menuOptions(void)
         
         PA_WaitForVBL();
       }
+    
+    PA_WaitForVBL();
     initMenu();
   }
 
@@ -493,16 +496,15 @@ void writeSaveData(void)
 
 void updateSpeed(void)
   {
-    switch (saveData.options[OPTION_SPEED])
+    switch ((enum E_OPTIONS_SPEED) saveData.options[OPTION_SPEED])
       {
-    case OPTIONVALUE_SPEED_SLOW :
+    case OPTION_SPEED_SLOW :
       speed = 128;
       break;
-    case OPTIONVALUE_SPEED_MEDIUM :
+    case OPTION_SPEED_MEDIUM : default :
       speed = 192;
       break;
-    case OPTIONVALUE_SPEED_FAST :
-    default :
+    case OPTION_SPEED_FAST :
       speed = 256;
       break;
       }
@@ -588,7 +590,7 @@ void moveBalls(void)
 
         if (top == TILE_CLEARED || bottom == TILE_CLEARED || right == TILE_CLEARED || left == TILE_CLEARED)
           {
-            if (!bouncePlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
+            if (!bouncePlayed && saveData.options[OPTION_SOUNDFX] == OPTION_SOUNDFX_YES)
               {
                 PA_PlaySimpleSound(PA_GetFreeSoundChannel(), bounce);
                 bouncePlayed = 1;
@@ -605,7 +607,7 @@ void moveBalls(void)
               }
             fillWall(&blueWall, TILE_DEFAULT, SPRITE_BLUE);
             
-            if (!jezzdeadPlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
+            if (!jezzdeadPlayed && saveData.options[OPTION_SOUNDFX] == OPTION_SOUNDFX_YES)
               {
                 PA_PlaySimpleSound(PA_GetFreeSoundChannel(), jezzdead);
                 jezzdeadPlayed = 1;
@@ -621,7 +623,7 @@ void moveBalls(void)
               }
             fillWall(&redWall, TILE_DEFAULT, SPRITE_RED);
             
-            if (!jezzdeadPlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
+            if (!jezzdeadPlayed && saveData.options[OPTION_SOUNDFX] == OPTION_SOUNDFX_YES)
               {
                 PA_PlaySimpleSound(PA_GetFreeSoundChannel(), jezzdead);
                 jezzdeadPlayed = 1;
@@ -689,7 +691,7 @@ void moveBalls(void)
                 balls[j].xdirection = -(balls[i].xdirection);
                 balls[j].ydirection = -(balls[i].ydirection);
                 
-                if (!bouncePlayed && saveData.options[OPTION_SOUNDFX] == OPTIONVALUE_SOUNDFX_YES)
+                if (!bouncePlayed && saveData.options[OPTION_SOUNDFX] == OPTION_SOUNDFX_YES)
                   {
                     PA_PlaySimpleSound(PA_GetFreeSoundChannel(), bounce);
                     bouncePlayed = 1;
@@ -835,11 +837,20 @@ void initBalls(void)
         balls[i].vx = balls[i].x << 8;
         balls[i].vy = balls[i].y << 8;
         
-        PA_CreateSprite(0, i, (void*) ball_Sprite, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
+        switch ((enum E_OPTIONS) saveData.options[OPTION_BALLS])
+          {
+        case OPTION_BALLS_CLASSIC: default:
+          PA_CreateSprite(0, i, (void*) ball_classic0_Sprite, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
+          break;
+        case OPTION_BALLS_SMILEY:
+          PA_CreateSprite(0, i, (void*) ball_smiley0_Sprite, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
+          break;
+          }
+        
         PA_SetSpritePrio(0, i, 1);
-        PA_StartSpriteAnim(0, i, 0, 7, 8);
+        PA_StartSpriteAnim(0, i, 0, 15, 16);
 
-        PA_SetSpriteAnim(0, i, PA_RandMinMax(0,7));
+        PA_SetSpriteAnim(0, i, PA_RandMinMax(0,15));
       }
   }
 
@@ -1155,10 +1166,18 @@ void initMenu(void)
     u8 i;
     for (i=0; i<nbBalls; i++)
       {
-        PA_CreateSprite(0, i, (void*) ball_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
-        PA_StartSpriteAnim(0, i, 0, 7, 8);
+        switch ((enum E_OPTIONS) saveData.options[OPTION_BALLS])
+          {
+        case OPTION_BALLS_CLASSIC: default:
+          PA_CreateSprite(0, i, (void*) ball_classic0_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
+          break;
+        case OPTION_BALLS_SMILEY:
+          PA_CreateSprite(0, i, (void*) ball_smiley0_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
+          break;
+          }
+        PA_StartSpriteAnim(0, i, 0, 15, 16);
 
-        PA_SetSpriteAnim(0, i, i*3);
+        PA_SetSpriteAnim(0, i, PA_RandMinMax(0,15));
       }
     updateCurrentMenu();
   }
