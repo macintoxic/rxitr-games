@@ -44,35 +44,43 @@
 #define MENU_ABOUT 2
 
 // Options {
-enum E_OPTIONS
+typedef enum
   {
      OPTION_SOUNDFX
     ,OPTION_SPEED
     ,OPTION_BALLS
+    ,OPTION_STYLUSMODE
     ,OPTIONS_COUNT
-  };
+  } E_OPTIONS;
 
-enum E_OPTIONS_SOUNDFX
+typedef enum
   {
      OPTION_SOUNDFX_YES
     ,OPTION_SOUNDFX_NO
     ,OPTIONS_SOUNDFX_COUNT
-  };
+  } E_OPTIONS_SOUNDFX;
 
-enum E_OPTIONS_SPEED
+typedef enum
   {
      OPTION_SPEED_SLOW
     ,OPTION_SPEED_MEDIUM
     ,OPTION_SPEED_FAST
     ,OPTIONS_SPEED_COUNT
-  };
+  } E_OPTIONS_SPEED;
 
-enum E_OPTIONS_BALLS
+typedef enum
   {
      OPTION_BALLS_CLASSIC
     ,OPTION_BALLS_SMILEY
     ,OPTIONS_BALLS_COUNT
-  };
+  } E_OPTIONS_BALLS;
+
+typedef enum
+  {
+     OPTION_STYLUSMODE_CLICK
+    ,OPTION_STYLUSMODE_STRETCH
+    ,OPTIONS_STYLUSMODE_COUNT
+  } E_OPTIONS_STYLUSMODE;
 // } Options
 
 typedef struct
@@ -93,7 +101,7 @@ typedef struct
     s16 x, y;
     s32 vx, vy;
     s8 xdirection, ydirection;
-    u8 angle;
+    u8 angle, stretched;
   } sprite;
 
 typedef struct

@@ -99,7 +99,7 @@ void msg_options_fr(void)
 void msg_optionsValues_en(u8 * options, u8 selectedOption)
   {
     PA_OutputText(0, 2, 5, "Sound:          %s           %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
-    switch ((enum E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
+    switch ((E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
       {
     case OPTION_SOUNDFX_YES: default:
       PA_OutputText(0, 20, 5, "%s", "Yes");
@@ -110,7 +110,7 @@ void msg_optionsValues_en(u8 * options, u8 selectedOption)
       }
     
     PA_OutputText(0, 2, 7, "Speed:          %s           %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
-    switch ((enum E_OPTIONS_SPEED) options[OPTION_SPEED])
+    switch ((E_OPTIONS_SPEED) options[OPTION_SPEED])
       {
     case OPTION_SPEED_SLOW:
       PA_OutputText(0, 20, 7, "%s", "Slow");
@@ -124,7 +124,7 @@ void msg_optionsValues_en(u8 * options, u8 selectedOption)
       }
     
     PA_OutputText(0, 2, 9, "Balls:          %s           %s", selectedOption == OPTION_BALLS ? "<" : " ", selectedOption == OPTION_BALLS ? ">" : " ");
-    switch ((enum E_OPTIONS_BALLS) options[OPTION_BALLS])
+    switch ((E_OPTIONS_BALLS) options[OPTION_BALLS])
       {
     case OPTION_BALLS_CLASSIC: default:
       PA_OutputText(0, 20, 9, "%s", "Classic");
@@ -133,12 +133,23 @@ void msg_optionsValues_en(u8 * options, u8 selectedOption)
       PA_OutputText(0, 20, 9, "%s", "Smiley");
       break;
       }
+    
+    PA_OutputText(0, 2, 11, "Stylus mode:    %s           %s", selectedOption == OPTION_STYLUSMODE ? "<" : " ", selectedOption == OPTION_STYLUSMODE ? ">" : " ");
+    switch ((E_OPTIONS_STYLUSMODE) options[OPTION_STYLUSMODE])
+      {
+    case OPTION_STYLUSMODE_CLICK: default:
+      PA_OutputText(0, 20, 11, "%s", "Click");
+      break;
+    case OPTION_STYLUSMODE_STRETCH:
+      PA_OutputText(0, 20, 11, "%s", "Stretch");
+      break;
+      }
   }
 
 void msg_optionsValues_fr(u8 * options, u8 selectedOption)
   {
     PA_OutputText(0, 2, 5, "Son:            %s           %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
-    switch ((enum E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
+    switch ((E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
       {
     case OPTION_SOUNDFX_YES: default:
       PA_OutputText(0, 20, 5, "%s", "Oui");
@@ -149,7 +160,7 @@ void msg_optionsValues_fr(u8 * options, u8 selectedOption)
       }
     
     PA_OutputText(0, 2, 7, "Vitesse:        %s           %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
-    switch ((enum E_OPTIONS_SPEED) options[OPTION_SPEED])
+    switch ((E_OPTIONS_SPEED) options[OPTION_SPEED])
       {
     case OPTION_SPEED_SLOW:
       PA_OutputText(0, 20, 7, "%s", "Lent");
@@ -163,13 +174,24 @@ void msg_optionsValues_fr(u8 * options, u8 selectedOption)
       }
     
     PA_OutputText(0, 2, 9, "Balles:         %s           %s", selectedOption == OPTION_BALLS ? "<" : " ", selectedOption == OPTION_BALLS ? ">" : " ");
-    switch ((enum E_OPTIONS_BALLS) options[OPTION_BALLS])
+    switch ((E_OPTIONS_BALLS) options[OPTION_BALLS])
       {
     case OPTION_BALLS_CLASSIC: default:
       PA_OutputText(0, 20, 9, "%s", "Classique");
       break;
     case OPTION_BALLS_SMILEY:
       PA_OutputText(0, 20, 9, "%s", "Smiley");
+      break;
+      }
+    
+    PA_OutputText(0, 2, 11, "Mode stylet:    %s           %s", selectedOption == OPTION_STYLUSMODE ? "<" : " ", selectedOption == OPTION_STYLUSMODE ? ">" : " ");
+    switch ((E_OPTIONS_STYLUSMODE) options[OPTION_STYLUSMODE])
+      {
+    case OPTION_STYLUSMODE_CLICK: default:
+      PA_OutputText(0, 20, 11, "%s", "Clic");
+      break;
+    case OPTION_STYLUSMODE_STRETCH:
+      PA_OutputText(0, 20, 11, "%s", "Etirer");
       break;
       }
   }
