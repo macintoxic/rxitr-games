@@ -227,6 +227,7 @@ void initDefaultOptions(u8 * options)
     options[OPTION_SOUNDFX] = OPTION_SOUNDFX_YES;
     options[OPTION_SPEED] = OPTION_SPEED_MEDIUM;
     options[OPTION_BALLS] = OPTION_BALLS_CLASSIC;
+    options[OPTION_STYLUSMODE] = OPTION_STYLUSMODE_CLICK;
   }
 
 void menu(void)
@@ -289,7 +290,7 @@ void menuPlay(void)
 void menuOptions(void)
   {
     u8 optionsCopy[OPTIONS_COUNT];
-    enum E_OPTIONS option;
+    E_OPTIONS option;
     destroyBalls();
     
     for (option=0; option<OPTIONS_COUNT; option++)
@@ -313,13 +314,23 @@ void menuOptions(void)
           {
             switch (option)
               {
-            case OPTION_SOUNDFX : default :
+            case OPTION_SOUNDFX :
               optionsCopy[option] += OPTIONS_SOUNDFX_COUNT + Pad.Newpress.Right - Pad.Newpress.Left;
               optionsCopy[option] %= OPTIONS_SOUNDFX_COUNT;
               break;
             case OPTION_SPEED :
               optionsCopy[option] += OPTIONS_SPEED_COUNT + Pad.Newpress.Right - Pad.Newpress.Left;
               optionsCopy[option] %= OPTIONS_SPEED_COUNT;
+              break;
+            case OPTION_BALLS :
+              optionsCopy[option] += OPTIONS_BALLS_COUNT + Pad.Newpress.Right - Pad.Newpress.Left;
+              optionsCopy[option] %= OPTIONS_BALLS_COUNT;
+              break;
+            case OPTION_STYLUSMODE :
+              optionsCopy[option] += OPTIONS_STYLUSMODE_COUNT + Pad.Newpress.Right - Pad.Newpress.Left;
+              optionsCopy[option] %= OPTIONS_STYLUSMODE_COUNT;
+              break;
+            case OPTIONS_COUNT :
               break;
               }
             messages.optionsValues(optionsCopy, option);
@@ -496,7 +507,7 @@ void writeSaveData(void)
 
 void updateSpeed(void)
   {
-    switch ((enum E_OPTIONS_SPEED) saveData.options[OPTION_SPEED])
+    switch ((E_OPTIONS_SPEED) saveData.options[OPTION_SPEED])
       {
     case OPTION_SPEED_SLOW :
       speed = 128;
@@ -706,8 +717,32 @@ void moveBalls(void)
 void buildWall(wall * wall, s16 xstep, s16 ystep, u16 tilenum, u8 spritenum)
   {
     s8 x, y;
+    BOOL stylusLaunch = FALSE;
 
-    if (complete < 75 && (Pad.Newpress.A || (Stylus.Released && Stylus.Downtime < 10 && abs(Stylus.Vx) < 10 && abs(Stylus.Vy) < 10)))
+    if (complete < 75 && Stylus.Released)
+      {
+        switch((E_OPTIONS_STYLUSMODE) saveData.options[OPTION_STYLUSMODE])
+          {
+        case OPTION_STYLUSMODE_CLICK : default :
+          if (Stylus.Downtime < 10 && abs(Stylus.Vx) < 10 && abs(Stylus.Vy) < 10)
+            stylusLaunch = TRUE;
+          break;
+        case OPTION_STYLUSMODE_STRETCH :
+          if (wbd.stretched && wbd.angle == 0)
+            {
+              stylusLaunch = TRUE;
+              PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
+            }
+          else if (wbd.stretched && wbd.angle == 1)
+            {
+              stylusLaunch = TRUE;
+              PA_StartSpriteAnim(0, SPRITE_WBD, 6, 11, 18);
+            }
+          break;
+          }
+      }
+    
+    if (complete < 75 && (Pad.Newpress.A || stylusLaunch))
       {
         x = ((wbd.x)>>3) + (xstep>0 ? 1 : 0);
         y = ((wbd.y)>>3) + (ystep>0 ? 1 : 0);
@@ -837,7 +872,7 @@ void initBalls(void)
         balls[i].vx = balls[i].x << 8;
         balls[i].vy = balls[i].y << 8;
         
-        switch ((enum E_OPTIONS) saveData.options[OPTION_BALLS])
+        switch ((E_OPTIONS_BALLS) saveData.options[OPTION_BALLS])
           {
         case OPTION_BALLS_CLASSIC: default:
           PA_CreateSprite(0, i, (void*) ball_classic0_Sprite, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
@@ -864,7 +899,7 @@ void initWbd(void)
     PA_SetSpritePrio(0, SPRITE_BLUE, 1);
     PA_CreateSprite(0, SPRITE_RED, (void*) red_Sprite, OBJ_SIZE_8X8, 1, 0, -8, -8);
     PA_SetSpritePrio(0, SPRITE_RED, 1);
-    PA_CreateSprite(0, SPRITE_WBD, (void*) wbd_Sprite, OBJ_SIZE_16X16,1 , 0, wbd.x, wbd.y);
+    PA_CreateSprite(0, SPRITE_WBD, (void*) wbd_Sprite, OBJ_SIZE_32X32,1 , 0, wbd.x - 8, wbd.y - 8);
     PA_SetSpritePrio(0, SPRITE_WBD, 1);
     PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
     
@@ -875,13 +910,40 @@ void initWbd(void)
 void moveWbd(void)
   {
     s8 x, y;
-    if (Stylus.Held)
+    
+    if (Stylus.Newpress)
       {
         wbd.x = Stylus.X;
         wbd.y = Stylus.Y;
 
         x = wbd.x>>3;
         y = wbd.y>>3;
+      }
+    
+    if (saveData.options[OPTION_STYLUSMODE] == OPTION_STYLUSMODE_STRETCH && Stylus.Held)
+      {
+        s16 diff = abs(wbd.x - Stylus.X) - abs(wbd.y - Stylus.Y);
+        
+        if (diff > 16 && (wbd.angle == 1 || !wbd.stretched))
+          {
+            wbd.angle = 0;
+            wbd.stretched = 1;
+            PA_StartSpriteAnim(0, SPRITE_WBD, 12, 15, 18);
+          }
+        else if (diff < -16 && (wbd.angle == 0 || !wbd.stretched))
+          {
+            wbd.angle = 1;
+            wbd.stretched = 1;
+            PA_StartSpriteAnim(0, SPRITE_WBD, 16, 19, 18);
+          }
+        else if (abs(diff) <= 16 && wbd.stretched)
+          {
+            if (wbd.angle)
+              PA_StartSpriteAnim(0, SPRITE_WBD, 6, 11, 18);
+            else
+              PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
+            wbd.stretched = 0;
+          }
       }
     
     if (Pad.Newpress.Right || Pad.Newpress.Left || Pad.Newpress.Down
@@ -932,7 +994,7 @@ void moveWbd(void)
           PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
       }
     
-    PA_SetSpriteXY(0, SPRITE_WBD, (wbd.x>>3)<<3, (wbd.y>>3)<<3);
+    PA_SetSpriteXY(0, SPRITE_WBD, ((wbd.x>>3)-1)<<3, ((wbd.y>>3)-1)<<3);
 
   }
 
@@ -1166,7 +1228,7 @@ void initMenu(void)
     u8 i;
     for (i=0; i<nbBalls; i++)
       {
-        switch ((enum E_OPTIONS) saveData.options[OPTION_BALLS])
+        switch ((E_OPTIONS_BALLS) saveData.options[OPTION_BALLS])
           {
         case OPTION_BALLS_CLASSIC: default:
           PA_CreateSprite(0, i, (void*) ball_classic0_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
