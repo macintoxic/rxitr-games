@@ -41,7 +41,7 @@ void initBalls(void);
 void moveBalls(void);
 void initWbd(void);
 void moveWbd(void);
-void buildWall(wall * wall, s16 xstep, s16 ystep, u16 tilenum, u8 spritenum);
+void buildWall(wall * thiswall, wall * otherwall, s16 xstep, s16 ystep, u16 tilenum, u8 spritenum);
 void fillWall(wall * wall, u16 tilenum, u8 spritenum);
 u16 checkCollision(s16 x, s16 y);
 void clearEmptyRooms(void);
@@ -368,10 +368,10 @@ void play(void)
 
     moveWbd();
     
-    buildWall(&blueWall, wbd.angle%2 ? 0 : -1,
+    buildWall(&blueWall, &redWall, wbd.angle%2 ? 0 : -1,
         wbd.angle%2 ? 1 : 0, TILE_BLUE, SPRITE_BLUE);
     
-    buildWall(&redWall, wbd.angle%2 ? 0 : 1,
+    buildWall(&redWall, &blueWall, wbd.angle%2 ? 0 : 1,
         wbd.angle%2 ? -1 : 0, TILE_RED, SPRITE_RED);
     
     timeLeft = time4lvl - (u32) (((double) ((PA_VBLCounter[0] * speed)>>8)) / 6.);
@@ -714,7 +714,7 @@ void moveBalls(void)
       }
   }
 
-void buildWall(wall * wall, s16 xstep, s16 ystep, u16 tilenum, u8 spritenum)
+void buildWall(wall * thiswall, wall * otherwall, s16 xstep, s16 ystep, u16 tilenum, u8 spritenum)
   {
     s8 x, y;
     BOOL stylusLaunch = FALSE;
@@ -742,65 +742,80 @@ void buildWall(wall * wall, s16 xstep, s16 ystep, u16 tilenum, u8 spritenum)
           }
       }
     
-    if (complete < 75 && (Pad.Newpress.A || stylusLaunch))
+    if (complete < 75 && (Pad.Newpress.A || Pad.Newpress.X || Pad.Newpress.Y || stylusLaunch))
       {
         x = ((wbd.x)>>3) + (xstep>0 ? 1 : 0);
         y = ((wbd.y)>>3) + (ystep>0 ? 1 : 0);
 
-        if (x >= 0 && y >= 0 && x < 32 && y < 24 && wall->xdirection == 0 && wall->ydirection == 0 && collision[y*width+x] != TILE_CLEARED)
+        if (x >= 0 && y >= 0 && x < 32 && y < 24 && thiswall->xdirection == 0 && thiswall->ydirection == 0 && collision[y*width+x] == TILE_DEFAULT
+            && !((otherwall->x1 != otherwall->x2 || otherwall->y1 != otherwall->y2) && (otherwall->xdirection == -1 || otherwall->ydirection == -1) && y*width+x == (otherwall->y2>>3)*width+(otherwall->x2>>3))
+            && !((otherwall->x1 != otherwall->x2 || otherwall->y1 != otherwall->y2) && (otherwall->xdirection == 1 || otherwall->ydirection == 1) && y*width+x == ((otherwall->y2>>3)+otherwall->ydirection)*width+((otherwall->x2>>3)+otherwall->xdirection))
+        )
           {
-            wall->xdirection = xstep;
-            wall->ydirection = ystep;
+            thiswall->xdirection = xstep;
+            thiswall->ydirection = ystep;
 
-            wall->x1 = wall->x2 = (x<<3);
-            wall->y1 = wall->y2 = (y<<3);
-            wall->vx = wall->x2 << 8;
-            wall->vy = wall->y2 << 8;
+            thiswall->x1 = thiswall->x2 = (x<<3);
+            thiswall->y1 = thiswall->y2 = (y<<3);
+            thiswall->vx = thiswall->x2 << 8;
+            thiswall->vy = thiswall->y2 << 8;
 
             PA_SetMapTile(0, 1, x, y, tilenum);
             collision[y*width+x] = tilenum;
             
-            PA_SetSpriteXY(0, spritenum, wall->x2, wall->y2);
+            PA_SetSpriteXY(0, spritenum, thiswall->x2, thiswall->y2);
           }
       }
-    else if (wall->xdirection != 0 || wall->ydirection != 0)
+    else if (thiswall->xdirection != 0 || thiswall->ydirection != 0)
       {
-        s8 xnext, ynext;
+        s8 xnext, ynext, otherxnext, otherynext;
         
-        x = xnext = ((wall->x2 + 4)>>3);
-        y = ynext = ((wall->y2 + 4)>>3);
-        if (wall->xdirection != 0)
-          xnext += wall->xdirection > 0 ? 1 : -1;
-        if (wall->ydirection != 0)
-          ynext += wall->ydirection > 0 ? 1 : -1;
+        x = xnext = ((thiswall->x2 + 4)>>3);
+        y = ynext = ((thiswall->y2 + 4)>>3);
+        if (thiswall->xdirection != 0)
+          xnext += thiswall->xdirection > 0 ? 1 : -1;
+        if (thiswall->ydirection != 0)
+          ynext += thiswall->ydirection > 0 ? 1 : -1;
+        otherxnext = ((otherwall->x2 + 4 + otherwall->xdirection)>>3);
+        otherynext = ((otherwall->y2 + 4 + otherwall->ydirection)>>3);
         
-        if ( (wall->xdirection > 0 && wall->x2 == 248)
-            || (wall->xdirection < 0 && wall->x2 == 0)
-            || (wall->ydirection > 0 && wall->y2 == 184)
-            || (wall->ydirection < 0 && wall->y2 == 0)
-            || (collision[ynext*width+xnext] == TILE_CLEARED && (wall->x2 & 7) == 0 && (wall->y2 & 7) == 0))
+        if ( (thiswall->xdirection > 0 && thiswall->x2 == 248)
+            || (thiswall->xdirection < 0 && thiswall->x2 == 0)
+            || (thiswall->ydirection > 0 && thiswall->y2 == 184)
+            || (thiswall->ydirection < 0 && thiswall->y2 == 0)
+            || (collision[ynext*width+xnext] == TILE_CLEARED && (thiswall->x2 & 7) == 0 && (thiswall->y2 & 7) == 0))
           {
-            fillWall(wall, TILE_CLEARED, spritenum);
+            fillWall(thiswall, TILE_CLEARED, spritenum);
             clearEmptyRooms();
+          }
+        else if (
+               (collision[ynext*width+xnext] != TILE_DEFAULT && (thiswall->x2 & 7) == 0 && (thiswall->y2 & 7) == 0)
+               || (thiswall->ydirection == 1 && otherwall->y2 == thiswall->y2 + 8 && otherwall->x2 < thiswall->x2 + 8 && otherwall->x2 > thiswall->x2 - 8)
+               || (thiswall->ydirection == -1 && otherwall->y2 == thiswall->y2 - 8 && otherwall->x2 < thiswall->x2 + 8 && otherwall->x2 > thiswall->x2 - 8)
+               || (thiswall->xdirection == 1 && otherwall->x2 == thiswall->x2 + 8 && otherwall->y2 < thiswall->y2 + 8 && otherwall->y2 > thiswall->y2 - 8)
+               || (thiswall->xdirection == -1 && otherwall->x2 == thiswall->x2 - 8 && otherwall->y2 < thiswall->y2 + 8 && otherwall->y2 > thiswall->y2 - 8)
+            )
+          { // blue and red collision
+            // wait
           }
         else
           {
-            wall->vx += wall->xdirection * speed;
-            wall->vy += wall->ydirection * speed;
-            wall->x2 = wall->vx >> 8;
-            wall->y2 = wall->vy >> 8;
+            thiswall->vx += thiswall->xdirection * speed;
+            thiswall->vy += thiswall->ydirection * speed;
+            thiswall->x2 = thiswall->vx >> 8;
+            thiswall->y2 = thiswall->vy >> 8;
 
-            if ((wall->x2 & 7) == 0 && (wall->y2 & 7) == 0)
+            if ((thiswall->x2 & 7) == 0 && (thiswall->y2 & 7) == 0)
             {
-              x = ((wall->x2 + 4)>>3);
-              y = ((wall->y2 + 4)>>3);
+              x = ((thiswall->x2 + 4)>>3);
+              y = ((thiswall->y2 + 4)>>3);
               
               PA_SetMapTile(0, 1, x, y, tilenum);
               collision[y*width+x] = tilenum;
             }
           }
         
-        PA_SetSpriteXY(0, spritenum, wall->x2, wall->y2);
+        PA_SetSpriteXY(0, spritenum, thiswall->x2, thiswall->y2);
       }
   }
 
@@ -983,7 +998,7 @@ void moveWbd(void)
         wbd.y = y<<3;
       }
 
-    if (Pad.Newpress.L || Pad.Newpress.R)
+    if (Pad.Newpress.L || Pad.Newpress.R || Pad.Newpress.B)
       {
         wbd.angle++;
         wbd.angle &= 1;
@@ -992,6 +1007,18 @@ void moveWbd(void)
           PA_StartSpriteAnim(0, SPRITE_WBD, 6, 11, 18);
         else
           PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
+      }
+
+    if (Pad.Newpress.X)
+      {
+        wbd.angle = 1;
+        PA_StartSpriteAnim(0, SPRITE_WBD, 6, 11, 18);
+      }
+
+    if (Pad.Newpress.Y)
+      {
+        wbd.angle = 0;
+        PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
       }
     
     PA_SetSpriteXY(0, SPRITE_WBD, ((wbd.x>>3)-1)<<3, ((wbd.y>>3)-1)<<3);
