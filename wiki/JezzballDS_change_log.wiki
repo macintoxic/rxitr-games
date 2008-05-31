@@ -1,0 +1,15 @@
+#labels Phase-Support
+= JezzballDS change log =
+
+== Version 1.1.0 ==
+
+ * Fixed issue 1: added collision between blue square and red square, same logic as the original game
+ * added new controls : X and Y to build vertical and horizontal walls without having to switch cursor orientation, B to switch cursor orientation (for those who don't like triggers)
+ * added basic controls help in options menu
+ * added new stylus mode in the options menu : stretch
+ * added new balls theme in the options menu : smiley
+ * little code cleaning (mainly in options defines)
+
+== Version 1.0.0 ==
+
+initial release
