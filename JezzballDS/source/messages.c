@@ -186,6 +186,10 @@ void msg_optionsValues_en(u8 * options, u8 selectedOption)
       PA_OutputText(0, 20, 11, "%s", "Stretch");
       break;
       }
+    
+    //                      "-------------**-------------"
+    PA_OutputText(0, 2, 22, "      press A to save       ");
+    PA_OutputText(0, 2, 23, "     press B to cancel      ");
   }
 
 void msg_optionsValues_fr(u8 * options, u8 selectedOption)
@@ -236,6 +240,10 @@ void msg_optionsValues_fr(u8 * options, u8 selectedOption)
       PA_OutputText(0, 20, 11, "%s", "Etirer");
       break;
       }
+    
+    //                      "-------------**-------------"
+    PA_OutputText(0, 2, 22, " appuyez sur A pour valider ");
+    PA_OutputText(0, 2, 23, " appuyez sur B pour annuler ");
   }
 
 void msg_gameover_fr(void)
