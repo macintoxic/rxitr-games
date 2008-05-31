@@ -87,6 +87,27 @@ void msg_options_en(void)
     PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 1, msg_en_options);
     PA_ShowBg(0, 0);
+    
+    PA_ClearBg(1, 1);
+    PA_EasyBgLoad(1, 1, msg_en_title_controls);
+    PA_ShowBg(1, 1);
+    
+    PA_ClearTextBg(1);
+    //                      "--------------- -- ---------"
+    PA_OutputText(1, 2, 8,  "        A or Stylus:        ");
+    PA_OutputText(1, 2, 9,  "        create a wall       ");
+    PA_OutputText(1, 2, 10, "                            ");
+    PA_OutputText(1, 2, 11, "         B or L / R:        ");
+    PA_OutputText(1, 2, 12, " change cursor orientation  ");
+    PA_OutputText(1, 2, 13, "                            ");
+    PA_OutputText(1, 2, 14, "             X:             ");
+    PA_OutputText(1, 2, 15, "   create a vertical wall   ");
+    PA_OutputText(1, 2, 16, "                            ");
+    PA_OutputText(1, 2, 17, "             Y:             ");
+    PA_OutputText(1, 2, 18, "  create a horizontal wall  ");
+    PA_OutputText(1, 2, 19, "                            ");
+    PA_OutputText(1, 2, 20, "           D-pad:           ");
+    PA_OutputText(1, 2, 21, "        move cursor         ");
   }
 
 void msg_options_fr(void)
@@ -94,6 +115,27 @@ void msg_options_fr(void)
     PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 1, msg_en_options);
     PA_ShowBg(0, 0);
+    
+    PA_ClearBg(1, 1);
+    PA_EasyBgLoad(1, 1, msg_fr_title_controls);
+    PA_ShowBg(1, 1);
+    
+    PA_ClearTextBg(1);
+    //                      "--------------- -- ---------"
+    PA_OutputText(1, 2, 8,  "        A ou Stylet:        ");
+    PA_OutputText(1, 2, 9,  "        créé un mur         ");
+    PA_OutputText(1, 2, 10, "                            ");
+    PA_OutputText(1, 2, 11, "         B ou L / R:        ");
+    PA_OutputText(1, 2, 12, " change le sens du curseur  ");
+    PA_OutputText(1, 2, 13, "                            ");
+    PA_OutputText(1, 2, 14, "             X:             ");
+    PA_OutputText(1, 2, 15, "    créé un mur vertical    ");
+    PA_OutputText(1, 2, 16, "                            ");
+    PA_OutputText(1, 2, 17, "             Y:             ");
+    PA_OutputText(1, 2, 18, "   créé un mur horizontal   ");
+    PA_OutputText(1, 2, 19, "                            ");
+    PA_OutputText(1, 2, 20, "           D-pad:           ");
+    PA_OutputText(1, 2, 21, "     déplace le curseur     ");
   }
 
 void msg_optionsValues_en(u8 * options, u8 selectedOption)

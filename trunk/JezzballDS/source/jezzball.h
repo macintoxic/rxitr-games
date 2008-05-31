@@ -28,11 +28,11 @@
 #define BG_INFO_WIDTH 1
 #define BG_INFO_HEIGHT 2
 
-#define MAX_NB_BALLS 32
+#define MAX_NB_BALLS 100
 
-#define SPRITE_WBD 32
-#define SPRITE_BLUE 33
-#define SPRITE_RED 34
+#define SPRITE_WBD 101
+#define SPRITE_BLUE 102
+#define SPRITE_RED 103
 
 #define TILE_DEFAULT background_Map[1020]
 #define TILE_CLEARED background_Map[1021]
