@@ -88,6 +88,8 @@ void msg_menu_fr(void)
 
 void msg_options_en(void)
   {
+    u8 y = 64, lineHeight = 10;
+    
     PA_EasyBgLoad(0, 1, msg_en_options);
     
     PA_EasyBgLoad(1, 1, msg_en_title_controls);
@@ -95,41 +97,47 @@ void msg_options_en(void)
     PA_Init16cBg(1, 0);
     PA_16cTextAlign(ALIGN_CENTER);
     
-    PA_16cText(1, 0, 64, 255, 191,
-          "A or Stylus:\n"
-          "create a wall\n\n"
-          "B or L / R:\n"
-          "change cursor orientation\n\n"
-          "X:\n"
-          "create a vertical wall\n\n"
-          "Y:\n"
-          "create a horizontal wall\n\n"
-          "D-pad:\n"
-          "move cursor"
-        , 1, 5, 10000);
+    PA_16cText(1, 0, y + lineHeight * 0, 255, 191, "A or Stylus:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 1, 255, 191, "create a wall", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 2, 255, 191, "B or L / R:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 3, 255, 191, "change cursor orientation", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 4, 255, 191, "X:", 1, 5, 10000);
+    PA_16cText(1, 0, y + lineHeight * 5, 255, 191, "create a vertical wall", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 6, 255, 191, "Y:", 1, 5, 10000);
+    PA_16cText(1, 0, y + lineHeight * 7, 255, 191, "create a horizontal wall", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 8, 255, 191, "D-pad:", 1, 5, 10000);
+    PA_16cText(1, 0, y + lineHeight * 9, 255, 191, "move cursor", 1, 5, 10000);
   }
 
 void msg_options_fr(void)
   {
-    PA_EasyBgLoad(0, 1, msg_en_options);
+    u8 y = 64, lineHeight = 10;
+    
+    PA_EasyBgLoad(0, 1, msg_fr_options);
     
     PA_EasyBgLoad(1, 1, msg_fr_title_controls);
     
     PA_Init16cBg(1, 0);
     PA_16cTextAlign(ALIGN_CENTER);
     
-    PA_16cText(1, 0, 64, 255, 191,
-          "A ou Stylet:\n"
-          "créé un mur\n\n"
-          "B ou L / R:\n"
-          "change l'orientation du curseur\n\n"
-          "X:\n"
-          "créé un mur vertical\n\n"
-          "Y:\n"
-          "créé un mur horizontal\n\n"
-          "D-pad:\n"
-          "déplace le curseur"
-        , 1, 5, 10000);
+    PA_16cText(1, 0, y + lineHeight * 0, 255, 191, "A ou Stylet:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 1, 255, 191, "créé un mur", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 2, 255, 191, "B ou L / R:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 3, 255, 191, "change l'orientation du curseur", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 4, 255, 191, "X:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 5, 255, 191, "créé un mur vertical", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 6, 255, 191, "Y:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 7, 255, 191, "créé un mur horizontal", 1, 5, 100);
+    y+=5;
+    PA_16cText(1, 0, y + lineHeight * 8, 255, 191, "D-pad:", 1, 5, 100);
+    PA_16cText(1, 0, y + lineHeight * 9, 255, 191, "déplace le curseur", 1, 5, 100);
   }
 
 #define displayOption(optionLabel, choicesLabels, option, y) \
