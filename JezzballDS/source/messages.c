@@ -67,16 +67,12 @@ void msg_none(void)
 
 void msg_gameover_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_en_gameover);
-    PA_ShowBg(0, 0);
   }
 
 void msg_menu_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_en_menu);
-    PA_ShowBg(0, 0);
   }
 
 void msg_menu_fr(void)
@@ -206,65 +202,47 @@ void msg_optionsValues_fr(u8 * options, u8 selectedOption)
 
 void msg_gameover_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_gameover);
-    PA_ShowBg(0, 0);
   }
 
 void msg_levelcomplete_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_en_levelcomplete);
-    PA_ShowBg(0, 0);
   }
 
 void msg_levelcomplete_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_levelcomplete);
-    PA_ShowBg(0, 0);
   }
 
 void msg_pause_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_en_pause);
-    PA_ShowBg(0, 0);
   }
 
 void msg_pause_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_pause);
-    PA_ShowBg(0, 0);
   }
 
 void msg_newhighscore_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_en_newhighscore);
-    PA_ShowBg(0, 0);
   }
 
 void msg_newhighscore_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_newhighscore);
-    PA_ShowBg(0, 0);
   }
 
 void msg_title_en(void)
   {
-    PA_ClearBg(1, 1);
     PA_EasyBgLoad(1, 1, msg_en_title);
-    PA_ShowBg(1, 1);
   }
 
 void msg_title_fr(void)
   {
-    PA_ClearBg(1, 1);
     PA_EasyBgLoad(1, 1, msg_fr_title);
-    PA_ShowBg(1, 1);
   }
 
 void msg_update_score(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus)
@@ -324,16 +302,12 @@ void msg_score_fr(void)
 
 void msg_about_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_en_about);
-    PA_ShowBg(0, 0);
   }
 
 void msg_about_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_about);
-    PA_ShowBg(0, 0);
   }
 
 void msg_highscores_en(u8 blink, score * highscores)
@@ -357,9 +331,9 @@ void msg_highscores_en(u8 blink, score * highscores)
             
             PA_16cTextAlign(ALIGN_RIGHT);
             sprintf(txt, " %d", highscores[i].level);
-            PA_16cText(1, 144, y, 159, y+20, txt, color, 5, 100);
+            PA_16cText(1, 144, y, 167, y+20, txt, color, 5, 100);
             sprintf(txt, " %d", highscores[i].score);
-            PA_16cText(1, 167, y, 239, y+20, txt, color, 5, 100);
+            PA_16cText(1, 168, y, 239, y+20, txt, color, 5, 100);
           }
         else
           {
@@ -367,8 +341,8 @@ void msg_highscores_en(u8 blink, score * highscores)
             PA_16cText(1, 16, y, 135, y+20, "?", 1, 5, 100);
             
             PA_16cTextAlign(ALIGN_RIGHT);
-            PA_16cText(1, 144, y, 159, y+20, "?", 1, 5, 100);
-            PA_16cText(1, 167, y, 239, y+20, "?", 1, 5, 100);
+            PA_16cText(1, 144, y, 167, y+20, "?", 1, 5, 100);
+            PA_16cText(1, 168, y, 239, y+20, "?", 1, 5, 100);
           }
       }
   }
@@ -395,9 +369,9 @@ void msg_highscores_fr(u8 blink, score * highscores)
                 
                 PA_16cTextAlign(ALIGN_RIGHT);
                 sprintf(txt, " %d", highscores[i].level);
-                PA_16cText(1, 144, y, 159, y+20, txt, 1, 5, 100);
+                PA_16cText(1, 144, y, 167, y+20, txt, 1, 5, 100);
                 sprintf(txt, " %d", highscores[i].score);
-                PA_16cText(1, 167, y, 239, y+20, txt, 1, 5, 100);
+                PA_16cText(1, 168, y, 239, y+20, txt, 1, 5, 100);
               }
           }
         else
@@ -406,8 +380,8 @@ void msg_highscores_fr(u8 blink, score * highscores)
             PA_16cText(1, 16, y, 135, y+20, "?", 1, 5, 100);
             
             PA_16cTextAlign(ALIGN_RIGHT);
-            PA_16cText(1, 144, y, 159, y+20, "?", 1, 5, 100);
-            PA_16cText(1, 167, y, 239, y+20, "?", 1, 5, 100);
+            PA_16cText(1, 144, y, 167, y+20, "?", 1, 5, 100);
+            PA_16cText(1, 168, y, 239, y+20, "?", 1, 5, 100);
           }
       }
   }
