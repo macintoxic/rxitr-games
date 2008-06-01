@@ -298,7 +298,6 @@ void menuOptions(void)
       optionsCopy[option] = saveData.options[option];
     
     option = 0;
-    PA_InitCustomText(0, 0, customfont);
     messages.options();
     messages.optionsValues(optionsCopy, option);
     
@@ -1195,11 +1194,9 @@ void initLevel(u8 level)
     initBalls();
     initWbd();
 
+    PA_ResetBgSys();
     PA_EasyBgLoad(0, 1, background);
 
-    PA_InitCustomText(0, 0, customfont);
-    //PA_InitCustomText(1, 0, customfont);
-    
     messages.title();
     messages.score();
     messages.update_score(level, lives, complete, timeLeft, (levelScore + totalScore + 5) / 10, (bonus + 5) / 10);
@@ -1245,9 +1242,6 @@ void initMenu(void)
     
     PA_ResetBgSys();
 
-    PA_InitCustomText(0, 0, customfont);
-    //PA_InitCustomText(1, 0, customfont);
-    
     messages.menu();
     messages.highscores(-1, saveData.highscores);
     
