@@ -35,13 +35,14 @@ typedef struct
     void (*optionsValues)(u8 * options, u8 selectedOption);
     void (*gameover)(void);
     void (*levelcomplete)(void);
-    void (*score)(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
+    void (*score)(void);
     void (*pause)(void);
     void (*none)(void);
     void (*title)(void);
     void (*about)(void);
     void (*highscores)(u8 blink, score * highscores);
     void (*newhighscore)(void);
+    void (*update_score)(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
 } l18n;
 
 void initLang(l18n * messages);
@@ -51,7 +52,7 @@ void msg_options_en(void);
 void msg_optionsValues_en(u8 * options, u8 selectedOption);
 void msg_gameover_en(void);
 void msg_levelcomplete_en(void);
-void msg_score_en(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
+void msg_score_en(void);
 void msg_pause_en(void);
 void msg_title_en(void);
 void msg_about_en(void);
@@ -63,7 +64,7 @@ void msg_options_fr(void);
 void msg_optionsValues_fr(u8 * options, u8 selectedOption);
 void msg_gameover_fr(void);
 void msg_levelcomplete_fr(void);
-void msg_score_fr(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
+void msg_score_fr(void);
 void msg_pause_fr(void);
 void msg_title_fr(void);
 void msg_about_fr(void);
@@ -71,5 +72,6 @@ void msg_highscores_fr(u8 blink, score * highscores);
 void msg_newhighscore_fr(void);
 
 void msg_none(void);
+void msg_update_score(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
 
 #endif /*MESSAGES_H_*/

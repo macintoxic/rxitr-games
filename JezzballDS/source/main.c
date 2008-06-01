@@ -26,10 +26,8 @@
 #include "jezzdead.h"
 
 // Converted using PAGfxConverter
-#include "gfx/all_gfx.c"
 #include "gfx/all_gfx.h"
-#include "font/all_gfx.h"
-#include "font/all_gfx.c"
+#include "gfx/all_gfx.c"
 
 #include "messages.h"
 #include "jezzball.h"
@@ -129,7 +127,7 @@ int main(int argc, char ** argv)
     
     libfatOK = fatInitDefault();
     
-    PA_WaitFor(PA_VBLCounter[0] > 180);
+    PA_WaitFor(PA_VBLCounter[0] > 90);
     PA_WaitFor(Pad.Newpress.Anykey || Stylus.Newpress || PA_VBLCounter[0] > 600);
     
     PA_SetBrightness(0, -31);
@@ -382,7 +380,7 @@ void play(void)
         messages.gameover();
       }
     
-    messages.score(level, lives, complete, timeLeft, (levelScore + totalScore + 5) / 10, (bonus + 5) / 10);
+    messages.update_score(level, lives, complete, timeLeft, (levelScore + totalScore + 5) / 10, (bonus + 5) / 10);
   }
 
 void promptHighscore(void)
@@ -440,7 +438,7 @@ void promptHighscore(void)
                     if (nletter >= MAX_NAME_LEN)
                       nletter = MAX_NAME_LEN - 1;
                     
-                    if ((PA_VBLCounter[0] & 15) == 0)
+                    if (!(PA_VBLCounter[0] & 7))
                       {
                         messages.highscores(blink ? i : -1, saveData.highscores);
                         blink = !blink;
@@ -1194,15 +1192,14 @@ void initLevel(u8 level)
     initBalls();
     initWbd();
 
-    PA_ResetBgSys();
     PA_EasyBgLoad(0, 1, background);
-    PA_EasyBgScrollXY(0, 1, 0, 0);
 
     PA_InitCustomText(0, 0, customfont);
-    PA_InitCustomText(1, 0, customfont);
+    //PA_InitCustomText(1, 0, customfont);
     
     messages.title();
-    messages.score(level, lives, complete, timeLeft, (levelScore + totalScore + 5) / 10, (bonus + 5) / 10);
+    messages.score();
+    messages.update_score(level, lives, complete, timeLeft, (levelScore + totalScore + 5) / 10, (bonus + 5) / 10);
   }
 
 
@@ -1246,7 +1243,7 @@ void initMenu(void)
     PA_ResetBgSys();
 
     PA_InitCustomText(0, 0, customfont);
-    PA_InitCustomText(1, 0, customfont);
+    //PA_InitCustomText(1, 0, customfont);
     
     messages.menu();
     messages.highscores(-1, saveData.highscores);

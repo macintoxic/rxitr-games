@@ -18,8 +18,7 @@
 #include <PA9.h>
 #include "messages.h"
 
-#include "messages/all_gfx.c"
-#include "messages/all_gfx.h"
+#include "gfx/all_gfx.h"
 
 void initLang(l18n * messages)
   {
@@ -38,6 +37,7 @@ void initLang(l18n * messages)
       messages->about = &msg_about_fr;
       messages->highscores = &msg_highscores_fr;
       messages->newhighscore = &msg_newhighscore_fr;
+      messages->update_score = &msg_update_score;
       break;
     default:
       messages->menu = &msg_menu_en;
@@ -52,8 +52,12 @@ void initLang(l18n * messages)
       messages->about = &msg_about_en;
       messages->highscores = &msg_highscores_en;
       messages->newhighscore = &msg_newhighscore_en;
+      messages->update_score = &msg_update_score;
       break;
       }
+    
+    PA_16cCustomFont(5, smallfont);
+    PA_LoadPal16(PAL_BG1, 15, smallfont_Pal);
   }
 
 void msg_none(void)
@@ -84,166 +88,112 @@ void msg_menu_fr(void)
 
 void msg_options_en(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 1, msg_en_options);
-    PA_ShowBg(0, 0);
     
-    PA_ClearBg(1, 1);
     PA_EasyBgLoad(1, 1, msg_en_title_controls);
-    PA_ShowBg(1, 1);
     
-    PA_ClearTextBg(1);
-    //                      "--------------- -- ---------"
-    PA_OutputText(1, 2, 8,  "        A or Stylus:        ");
-    PA_OutputText(1, 2, 9,  "        create a wall       ");
-    PA_OutputText(1, 2, 10, "                            ");
-    PA_OutputText(1, 2, 11, "         B or L / R:        ");
-    PA_OutputText(1, 2, 12, " change cursor orientation  ");
-    PA_OutputText(1, 2, 13, "                            ");
-    PA_OutputText(1, 2, 14, "             X:             ");
-    PA_OutputText(1, 2, 15, "   create a vertical wall   ");
-    PA_OutputText(1, 2, 16, "                            ");
-    PA_OutputText(1, 2, 17, "             Y:             ");
-    PA_OutputText(1, 2, 18, "  create a horizontal wall  ");
-    PA_OutputText(1, 2, 19, "                            ");
-    PA_OutputText(1, 2, 20, "           D-pad:           ");
-    PA_OutputText(1, 2, 21, "        move cursor         ");
+    PA_Init16cBg(1, 0);
+    PA_16cTextAlign(ALIGN_CENTER);
+    
+    PA_16cText(1, 0, 64, 255, 191,
+          "A or Stylus:\n"
+          "create a wall\n\n"
+          "B or L / R:\n"
+          "change cursor orientation\n\n"
+          "X:\n"
+          "create a vertical wall\n\n"
+          "Y:\n"
+          "create a horizontal wall\n\n"
+          "D-pad:\n"
+          "move cursor"
+        , 1, 5, 10000);
   }
 
 void msg_options_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 1, msg_en_options);
-    PA_ShowBg(0, 0);
     
-    PA_ClearBg(1, 1);
     PA_EasyBgLoad(1, 1, msg_fr_title_controls);
-    PA_ShowBg(1, 1);
     
-    PA_ClearTextBg(1);
-    //                      "--------------- -- ---------"
-    PA_OutputText(1, 2, 8,  "        A ou Stylet:        ");
-    PA_OutputText(1, 2, 9,  "        créé un mur         ");
-    PA_OutputText(1, 2, 10, "                            ");
-    PA_OutputText(1, 2, 11, "         B ou L / R:        ");
-    PA_OutputText(1, 2, 12, " change le sens du curseur  ");
-    PA_OutputText(1, 2, 13, "                            ");
-    PA_OutputText(1, 2, 14, "             X:             ");
-    PA_OutputText(1, 2, 15, "    créé un mur vertical    ");
-    PA_OutputText(1, 2, 16, "                            ");
-    PA_OutputText(1, 2, 17, "             Y:             ");
-    PA_OutputText(1, 2, 18, "   créé un mur horizontal   ");
-    PA_OutputText(1, 2, 19, "                            ");
-    PA_OutputText(1, 2, 20, "           D-pad:           ");
-    PA_OutputText(1, 2, 21, "     déplace le curseur     ");
+    PA_Init16cBg(1, 0);
+    PA_16cTextAlign(ALIGN_CENTER);
+    
+    PA_16cText(1, 0, 64, 255, 191,
+          "A ou Stylet:\n"
+          "créé un mur\n\n"
+          "B ou L / R:\n"
+          "change l'orientation du curseur\n\n"
+          "X:\n"
+          "créé un mur vertical\n\n"
+          "Y:\n"
+          "créé un mur horizontal\n\n"
+          "D-pad:\n"
+          "déplace le curseur"
+        , 1, 5, 10000);
+  }
+
+#define displayOption(optionLabel, choicesLabels, option, y) \
+  { \
+    PA_16cTextAlign(ALIGN_LEFT); \
+    PA_16cText(0, 16, y, 127, 191, optionLabel, 1, 5, 100); \
+    PA_16cTextAlign(ALIGN_CENTER); \
+    PA_16cText(0, 136, y, 231, 191, choicesLabels[option], 1, 5, 100); \
   }
 
 void msg_optionsValues_en(u8 * options, u8 selectedOption)
   {
-    PA_OutputText(0, 2, 5, "Sound:          %s           %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
-    switch ((E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
-      {
-    case OPTION_SOUNDFX_YES: default:
-      PA_OutputText(0, 20, 5, "%s", "Yes");
-      break;
-    case OPTION_SOUNDFX_NO:
-      PA_OutputText(0, 20, 5, "%s", "No");
-      break;
-      }
+    char * soundfxChoicesLabels[2] = {"Yes", "No"}; 
+    char * speedChoicesLabels[3] = {"Slow", "Medium", "Fast"}; 
+    char * ballsChoicesLabels[2] = {"Classic", "Smiley"}; 
+    char * stylusmodeChoicesLabels[2] = {"Click", "Stretch"};
     
-    PA_OutputText(0, 2, 7, "Speed:          %s           %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
-    switch ((E_OPTIONS_SPEED) options[OPTION_SPEED])
-      {
-    case OPTION_SPEED_SLOW:
-      PA_OutputText(0, 20, 7, "%s", "Slow");
-      break;
-    case OPTION_SPEED_MEDIUM: default:
-      PA_OutputText(0, 20, 7, "%s", "Medium");
-      break;
-    case OPTION_SPEED_FAST:
-      PA_OutputText(0, 20, 7, "%s", "Fast");
-      break;
-      }
+    u8 y = 40, lineHeight = 12;
     
-    PA_OutputText(0, 2, 9, "Balls:          %s           %s", selectedOption == OPTION_BALLS ? "<" : " ", selectedOption == OPTION_BALLS ? ">" : " ");
-    switch ((E_OPTIONS_BALLS) options[OPTION_BALLS])
-      {
-    case OPTION_BALLS_CLASSIC: default:
-      PA_OutputText(0, 20, 9, "%s", "Classic");
-      break;
-    case OPTION_BALLS_SMILEY:
-      PA_OutputText(0, 20, 9, "%s", "Smiley");
-      break;
-      }
+    PA_Init16cBg(0, 0);
     
-    PA_OutputText(0, 2, 11, "Stylus mode:    %s           %s", selectedOption == OPTION_STYLUSMODE ? "<" : " ", selectedOption == OPTION_STYLUSMODE ? ">" : " ");
-    switch ((E_OPTIONS_STYLUSMODE) options[OPTION_STYLUSMODE])
-      {
-    case OPTION_STYLUSMODE_CLICK: default:
-      PA_OutputText(0, 20, 11, "%s", "Click");
-      break;
-    case OPTION_STYLUSMODE_STRETCH:
-      PA_OutputText(0, 20, 11, "%s", "Stretch");
-      break;
-      }
+    PA_16cTextAlign(ALIGN_CENTER);
+    PA_16cText(0, 127, y + lineHeight * selectedOption, 135, 191, "<", 1, 5, 1);
+    PA_16cText(0, 232, y + lineHeight * selectedOption, 239, 191, ">", 1, 5, 1);
     
-    //                      "-------------**-------------"
-    PA_OutputText(0, 2, 22, "      press A to save       ");
-    PA_OutputText(0, 2, 23, "     press B to cancel      ");
+    displayOption("Sound:", soundfxChoicesLabels, options[OPTION_SOUNDFX], y);
+    y += lineHeight;
+    displayOption("Speed:", speedChoicesLabels, options[OPTION_SPEED], y);
+    y += lineHeight;
+    displayOption("Balls:", ballsChoicesLabels, options[OPTION_BALLS], y);
+    y += lineHeight;
+    displayOption("Stylus mode:", stylusmodeChoicesLabels, options[OPTION_STYLUSMODE], y);
+    y += lineHeight;
+    
+    PA_16cTextAlign(ALIGN_CENTER);
+    PA_16cText(0, 16, 183, 231, 191, "Press A to apply or B to discard", 1, 0, 100);
   }
 
 void msg_optionsValues_fr(u8 * options, u8 selectedOption)
   {
-    PA_OutputText(0, 2, 5, "Son:            %s           %s", selectedOption == OPTION_SOUNDFX ? "<" : " ", selectedOption == OPTION_SOUNDFX ? ">" : " ");
-    switch ((E_OPTIONS_SOUNDFX) options[OPTION_SOUNDFX])
-      {
-    case OPTION_SOUNDFX_YES: default:
-      PA_OutputText(0, 20, 5, "%s", "Oui");
-      break;
-    case OPTION_SOUNDFX_NO:
-      PA_OutputText(0, 20, 5, "%s", "Non");
-      break;
-      }
+    char * soundfxChoicesLabels[2] = {"Oui", "Non"}; 
+    char * speedChoicesLabels[3] = {"Lent", "Moyen", "Rapide"}; 
+    char * ballsChoicesLabels[2] = {"Classique", "Smiley"}; 
+    char * stylusmodeChoicesLabels[2] = {"Clic", "Stretch"};
     
-    PA_OutputText(0, 2, 7, "Vitesse:        %s           %s", selectedOption == OPTION_SPEED   ? "<" : " ", selectedOption == OPTION_SPEED   ? ">" : " ");
-    switch ((E_OPTIONS_SPEED) options[OPTION_SPEED])
-      {
-    case OPTION_SPEED_SLOW:
-      PA_OutputText(0, 20, 7, "%s", "Lent");
-      break;
-    case OPTION_SPEED_MEDIUM: default:
-      PA_OutputText(0, 20, 7, "%s", "Moyen");
-      break;
-    case OPTION_SPEED_FAST:
-      PA_OutputText(0, 20, 7, "%s", "Rapide");
-      break;
-      }
+    u8 y = 40, lineHeight = 12;
     
-    PA_OutputText(0, 2, 9, "Balles:         %s           %s", selectedOption == OPTION_BALLS ? "<" : " ", selectedOption == OPTION_BALLS ? ">" : " ");
-    switch ((E_OPTIONS_BALLS) options[OPTION_BALLS])
-      {
-    case OPTION_BALLS_CLASSIC: default:
-      PA_OutputText(0, 20, 9, "%s", "Classique");
-      break;
-    case OPTION_BALLS_SMILEY:
-      PA_OutputText(0, 20, 9, "%s", "Smiley");
-      break;
-      }
+    PA_Init16cBg(0, 0);
     
-    PA_OutputText(0, 2, 11, "Mode stylet:    %s           %s", selectedOption == OPTION_STYLUSMODE ? "<" : " ", selectedOption == OPTION_STYLUSMODE ? ">" : " ");
-    switch ((E_OPTIONS_STYLUSMODE) options[OPTION_STYLUSMODE])
-      {
-    case OPTION_STYLUSMODE_CLICK: default:
-      PA_OutputText(0, 20, 11, "%s", "Clic");
-      break;
-    case OPTION_STYLUSMODE_STRETCH:
-      PA_OutputText(0, 20, 11, "%s", "Etirer");
-      break;
-      }
+    PA_16cTextAlign(ALIGN_CENTER);
+    PA_16cText(0, 127, y + lineHeight * selectedOption, 135, 191, "<", 1, 5, 1);
+    PA_16cText(0, 232, y + lineHeight * selectedOption, 239, 191, ">", 1, 5, 1);
     
-    //                      "-------------**-------------"
-    PA_OutputText(0, 2, 22, " appuyez sur A pour valider ");
-    PA_OutputText(0, 2, 23, " appuyez sur B pour annuler ");
+    displayOption("Son:", soundfxChoicesLabels, options[OPTION_SOUNDFX], y);
+    y += lineHeight;
+    displayOption("Vitesse:", speedChoicesLabels, options[OPTION_SPEED], y);
+    y += lineHeight;
+    displayOption("Balles:", ballsChoicesLabels, options[OPTION_BALLS], y);
+    y += lineHeight;
+    displayOption("Mode stylet:", stylusmodeChoicesLabels, options[OPTION_STYLUSMODE], y);
+    y += lineHeight;
+    
+    PA_16cTextAlign(ALIGN_CENTER);
+    PA_16cText(0, 16, 175, 231, 191, "Appuyez sur A pour appliquer\nou sur B pour annuler", 1, 0, 100);
   }
 
 void msg_gameover_fr(void)
@@ -309,24 +259,59 @@ void msg_title_fr(void)
     PA_ShowBg(1, 1);
   }
 
-void msg_score_en(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus)
+void msg_update_score(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus)
   {
-    PA_OutputText(1, 2, 8,  "Level:             %§9d", level);
-    PA_OutputText(1, 2, 10,  "Lives:             %§9d", lives);
-    PA_OutputText(1, 2, 12, "Area cleared:     %§9d%", complete);
-    PA_OutputText(1, 2, 14, "Time left:         %§9d", timeLeft);
-    PA_OutputText(1, 2, 16, "Score:             %§9d", score);
-    PA_OutputText(1, 2, 18, "Bonus:             %§9d", bonus);
+    u8 y = 80;
+    u8 lineHeight = 12;
+    char txt[10];
+    
+    PA_16cClearZone(1, 128, 0, 255, 191);
+    
+    PA_16cTextAlign(ALIGN_RIGHT);
+    sprintf(txt, "%d", level);
+    PA_16cText(1, 128, y+lineHeight*0, 239, 191, txt, 1, 5, 100);
+    sprintf(txt, "%d", lives);
+    PA_16cText(1, 128, y+lineHeight*1, 239, 191, txt, 1, 5, 100);
+    sprintf(txt, "%d%%", complete);
+    PA_16cText(1, 128, y+lineHeight*2, 239, 191, txt, 1, 5, 100);
+    sprintf(txt, "%d", timeLeft);
+    PA_16cText(1, 128, y+lineHeight*3, 239, 191, txt, 1, 5, 100);
+    sprintf(txt, "%d", score);
+    PA_16cText(1, 128, y+lineHeight*4, 239, 191, txt, 1, 5, 100);
+    sprintf(txt, "%d", bonus);
+    PA_16cText(1, 128, y+lineHeight*5, 239, 191, txt, 1, 5, 100);
   }
 
-void msg_score_fr(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus)
+void msg_score_en(void)
   {
-    PA_OutputText(1, 2, 8,  "Niveau:            %§9d", level);
-    PA_OutputText(1, 2, 10,  "Vies:              %§9d", lives);
-    PA_OutputText(1, 2, 12, "Zone nettoyée:    %§9d%", complete);
-    PA_OutputText(1, 2, 14, "Temps restant:     %§9d", timeLeft);
-    PA_OutputText(1, 2, 16, "Score:             %§9d", score);
-    PA_OutputText(1, 2, 18, "Bonus:             %§9d", bonus);
+    u8 y = 80;
+    u8 lineHeight = 12;
+    
+    PA_Init16cBg(1, 0);
+    
+    PA_16cTextAlign(ALIGN_LEFT);
+    PA_16cText(1, 16, y+lineHeight*0, 127, 191, "Level:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*1, 127, 191, "Lives:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*2, 127, 191, "Area cleared:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*3, 127, 191, "Time left:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*4, 127, 191, "Score:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*5, 127, 191, "Bonus:", 1, 5, 100);
+  }
+
+void msg_score_fr(void)
+  {
+    u8 y = 80;
+    u8 lineHeight = 12;
+    
+    PA_Init16cBg(1, 0);
+    
+    PA_16cTextAlign(ALIGN_LEFT);
+    PA_16cText(1, 16, y+lineHeight*0, 127, 191, "Niveau:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*1, 127, 191, "Vies:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*2, 127, 191, "Zone nettoyée:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*3, 127, 191, "Temps restant:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*4, 127, 191, "Score:", 1, 5, 100);
+    PA_16cText(1, 16, y+lineHeight*5, 127, 191, "Bonus:", 1, 5, 100);
   }
 
 void msg_about_en(void)
@@ -347,20 +332,35 @@ void msg_highscores_en(u8 blink, score * highscores)
   {
     u8 i;
     
-    PA_ClearTextBg(1);
-    
     PA_EasyBgLoad(1, 1, msg_en_title_highscores);
+    
+    PA_Init16cBg(1, 0);
     
     for (i=0; i<NB_HIGHSCORES; i++)
       {
+        u8 y = 80+i*10;
         if (highscores[i].score > 0)
           {
-            if (!(blink == i))
-              PA_OutputText(1, 2, i+11,  "%s %§2d %§9d", highscores[i].name, highscores[i].level, (u32) ((highscores[i].score + 5)/10));
+            char txt[20];
+            u8 color = blink == i ? 7 : 1;
+            
+            PA_16cTextAlign(ALIGN_LEFT);
+            PA_16cText(1, 16, y, 135, y+20, highscores[i].name, color, 5, 100);
+            
+            PA_16cTextAlign(ALIGN_RIGHT);
+            sprintf(txt, " %d", highscores[i].level);
+            PA_16cText(1, 144, y, 159, y+20, txt, color, 5, 100);
+            sprintf(txt, " %d", highscores[i].score);
+            PA_16cText(1, 167, y, 239, y+20, txt, color, 5, 100);
           }
         else
           {
-            PA_OutputText(1, 2, i+11,  "--------------- -- ---------");
+            PA_16cTextAlign(ALIGN_LEFT);
+            PA_16cText(1, 16, y, 135, y+20, "?", 1, 5, 100);
+            
+            PA_16cTextAlign(ALIGN_RIGHT);
+            PA_16cText(1, 144, y, 159, y+20, "?", 1, 5, 100);
+            PA_16cText(1, 167, y, 239, y+20, "?", 1, 5, 100);
           }
       }
   }
@@ -369,20 +369,37 @@ void msg_highscores_fr(u8 blink, score * highscores)
   {
     u8 i;
     
-    PA_ClearTextBg(1);
-    
     PA_EasyBgLoad(1, 1, msg_fr_title_highscores);
+    
+    PA_Init16cBg(1, 0);
     
     for (i=0; i<NB_HIGHSCORES; i++)
       {
+        u8 y = 80+i*10;
         if (highscores[i].score > 0)
           {
             if (!(blink == i))
-              PA_OutputText(1, 2, i+11,  "%s %§2d %§9d", highscores[i].name, highscores[i].level, (u32) ((highscores[i].score + 5)/10));
+              {
+                char txt[20];
+                
+                PA_16cTextAlign(ALIGN_LEFT);
+                PA_16cText(1, 16, y, 135, y+20, highscores[i].name, 1, 5, 100);
+                
+                PA_16cTextAlign(ALIGN_RIGHT);
+                sprintf(txt, " %d", highscores[i].level);
+                PA_16cText(1, 144, y, 159, y+20, txt, 1, 5, 100);
+                sprintf(txt, " %d", highscores[i].score);
+                PA_16cText(1, 167, y, 239, y+20, txt, 1, 5, 100);
+              }
           }
         else
           {
-            PA_OutputText(1, 2, i+11,  "--------------- -- ---------");
+            PA_16cTextAlign(ALIGN_LEFT);
+            PA_16cText(1, 16, y, 135, y+20, "?", 1, 5, 100);
+            
+            PA_16cTextAlign(ALIGN_RIGHT);
+            PA_16cText(1, 144, y, 159, y+20, "?", 1, 5, 100);
+            PA_16cText(1, 167, y, 239, y+20, "?", 1, 5, 100);
           }
       }
   }
