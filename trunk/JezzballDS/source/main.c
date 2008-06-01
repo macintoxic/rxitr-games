@@ -109,9 +109,12 @@ int main(int argc, char ** argv)
     height = background_Info[BG_INFO_HEIGHT]>>3;
     
     PA_Init();
-    
-    PA_EasyBgLoad(0, 0, LGPL);
-    PA_EasyBgLoad(1, 0, rxitrgames);
+    PA_InitText(1, 0);
+    PA_SetTextCol(1, 10,10,10);
+    PA_OutputSimpleText(1, 0, 0, "JezzballDS");
+    PA_OutputSimpleText(1, 32-sizeof(JEZZBALLDS_VERSION)+1, 0, JEZZBALLDS_VERSION);
+    PA_EasyBgLoad(0, 1, LGPL);
+    PA_EasyBgLoad(1, 1, rxitrgames);
     
     u8 nletter;
     for (nletter=0; nletter<MAX_NAME_LEN && PA_UserInfo.Name[nletter] != '\0'; nletter++)

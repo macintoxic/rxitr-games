@@ -18,9 +18,13 @@
 #ifndef JEZZBALL_H
 #define JEZZBALL_H
 
+#define JEZZBALLDS_VERSION "version 1.2.0"
+
+
 // save
 #define MAX_NAME_LEN 15
 #define NB_HIGHSCORES 10
+// save compatibility
 #define SAVE_SIGNATURE "JezzballDS_1.1.0"
 
 
