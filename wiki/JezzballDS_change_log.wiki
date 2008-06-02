@@ -1,6 +1,5 @@
 #labels Phase-Support
 = JezzballDS change log =
-= JezzballDS change log =
 
 == Version 1.2.1 ==
 
