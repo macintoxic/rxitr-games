@@ -18,7 +18,7 @@
 #ifndef JEZZBALL_H
 #define JEZZBALL_H
 
-#define JEZZBALLDS_VERSION "version 1.2.0"
+#define JEZZBALLDS_VERSION "version 1.2.1"
 
 
 // save
