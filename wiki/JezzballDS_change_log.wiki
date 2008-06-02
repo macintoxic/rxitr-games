@@ -1,5 +1,10 @@
 #labels Phase-Support
 = JezzballDS change log =
+= JezzballDS change log =
+
+== Version 1.2.1 ==
+
+ * fixed issue 2 (bug in french version)
 
 == Version 1.2.0 ==
 
