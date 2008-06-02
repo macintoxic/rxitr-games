@@ -77,9 +77,7 @@ void msg_menu_en(void)
 
 void msg_menu_fr(void)
   {
-    PA_ClearBg(0, 0);
     PA_EasyBgLoad(0, 0, msg_fr_menu);
-    PA_ShowBg(0, 0);
   }
 
 void msg_options_en(void)
