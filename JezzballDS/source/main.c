@@ -1189,7 +1189,6 @@ void initLevel(u8 level)
       {
     case OPTION_BALLS_CLASSIC: default:
       lastframe = (s16) (sizeof(ball_classic0_Sprite) / 64 - 1);
-      PA_WaitFor(Pad.Newpress.Anykey);
       initBalls((void*) ball_classic0_Sprite, lastframe);
       break;
     case OPTION_BALLS_SMILEY:
