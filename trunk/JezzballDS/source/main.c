@@ -35,7 +35,7 @@
 void loadSaveData(void);
 void writeSaveData(void);
 void initDefaultOptions(u8 * options);
-void initBalls(void);
+void initBalls(void* obj_data, s16 lastframe);
 void moveBalls(void);
 void initWbd(void);
 void moveWbd(void);
@@ -97,7 +97,7 @@ u16 tilesToClear;
 
 save saveData;
 
-u8 name[21];
+u8 name[MAX_NAME_LEN+1];
 
 l18n messages;
 
@@ -864,10 +864,10 @@ void fillWall(wall * wall, u16 tilenum, u8 spritenum)
     checkIfWin();
   }
 
-void initBalls(void)
+void initBalls(void* obj_data, s16 lastframe)
   {
     u8 i;
-
+    
     for (i=0; i<nbBalls; i++)
       {
         u8 x, y;
@@ -887,18 +887,10 @@ void initBalls(void)
         balls[i].vx = balls[i].x << 8;
         balls[i].vy = balls[i].y << 8;
         
-        switch ((E_OPTIONS_BALLS) saveData.options[OPTION_BALLS])
-          {
-        case OPTION_BALLS_CLASSIC: default:
-          PA_CreateSprite(0, i, (void*) ball_classic0_Sprite, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
-          break;
-        case OPTION_BALLS_SMILEY:
-          PA_CreateSprite(0, i, (void*) ball_smiley0_Sprite, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
-          break;
-          }
+        PA_CreateSprite(0, i, obj_data, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
         
         PA_SetSpritePrio(0, i, 1);
-        PA_StartSpriteAnim(0, i, 0, 15, 16);
+        PA_StartSpriteAnim(0, i, 0, lastframe, 16);
 
         PA_SetSpriteAnim(0, i, PA_RandMinMax(0,15));
       }
@@ -1191,7 +1183,21 @@ void initLevel(u8 level)
               }
           }
       }
-    initBalls();
+    
+    s16 lastframe;
+    switch ((E_OPTIONS_BALLS) saveData.options[OPTION_BALLS])
+      {
+    case OPTION_BALLS_CLASSIC: default:
+      lastframe = (s16) (sizeof(ball_classic0_Sprite) / 64 - 1);
+      PA_WaitFor(Pad.Newpress.Anykey);
+      initBalls((void*) ball_classic0_Sprite, lastframe);
+      break;
+    case OPTION_BALLS_SMILEY:
+      lastframe = (s16) (sizeof(ball_smiley0_Sprite) / 64 - 1);
+      initBalls((void*) ball_smiley0_Sprite, lastframe);
+      break;
+      }
+    
     initWbd();
 
     PA_ResetBgSys();
@@ -1237,6 +1243,21 @@ void fadeOut(u8 screen0, u8 screen1)
 
 void initMenu(void)
   {
+    void* obj_data;
+    s16 lastframe;
+    
+    switch ((E_OPTIONS_BALLS) saveData.options[OPTION_BALLS])
+      {
+    case OPTION_BALLS_CLASSIC: default:
+      obj_data = (void*) ball_classic0_Sprite;
+      lastframe = (s16) (sizeof(ball_classic0_Sprite) / 64 - 1);
+      break;
+    case OPTION_BALLS_SMILEY:
+      obj_data = (void*) ball_smiley0_Sprite;
+      lastframe = (s16) (sizeof(ball_smiley0_Sprite) / 64 - 1);
+      break;
+      }
+    
     inMenu = 1;
     currentMenuItem = 0;
     
@@ -1245,21 +1266,14 @@ void initMenu(void)
     messages.menu();
     messages.highscores(-1, saveData.highscores);
     
+    
+    
     nbBalls = 2;
     u8 i;
     for (i=0; i<nbBalls; i++)
       {
-        switch ((E_OPTIONS_BALLS) saveData.options[OPTION_BALLS])
-          {
-        case OPTION_BALLS_CLASSIC: default:
-          PA_CreateSprite(0, i, (void*) ball_classic0_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
-          break;
-        case OPTION_BALLS_SMILEY:
-          PA_CreateSprite(0, i, (void*) ball_smiley0_Sprite, OBJ_SIZE_8X8, 1 , 0, -8, -8);
-          break;
-          }
-        PA_StartSpriteAnim(0, i, 0, 15, 16);
-
+        PA_CreateSprite(0, i, obj_data, OBJ_SIZE_8X8, 1 , 0, -8, -8);
+        PA_StartSpriteAnim(0, i, 0, lastframe, 16);
         PA_SetSpriteAnim(0, i, PA_RandMinMax(0,15));
       }
     updateCurrentMenu();
