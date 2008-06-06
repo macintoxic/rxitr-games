@@ -38,6 +38,7 @@ void initLang(l18n * messages)
       messages->highscores = &msg_highscores_fr;
       messages->newhighscore = &msg_newhighscore_fr;
       messages->update_score = &msg_update_score;
+      messages->level_choice = &msg_level_choice_fr;
       break;
     default:
       messages->menu = &msg_menu_en;
@@ -53,6 +54,7 @@ void initLang(l18n * messages)
       messages->highscores = &msg_highscores_en;
       messages->newhighscore = &msg_newhighscore_en;
       messages->update_score = &msg_update_score;
+      messages->level_choice = &msg_level_choice_en;
       break;
       }
     
@@ -144,10 +146,10 @@ void msg_options_fr(void)
 
 void msg_optionsValues_en(u8 * options, u8 selectedOption)
   {
-    char * soundfxChoicesLabels[2] = {"Yes", "No"}; 
-    char * speedChoicesLabels[3] = {"Slow", "Medium", "Fast"}; 
-    char * ballsChoicesLabels[2] = {"Classic", "Smiley"}; 
-    char * stylusmodeChoicesLabels[2] = {"Click", "Stretch"};
+    char * soundfxChoicesLabels[OPTIONS_SOUNDFX_COUNT] = {"Yes", "No"}; 
+    char * speedChoicesLabels[OPTIONS_SPEED_COUNT] = {"Slow", "Medium", "Fast"}; 
+    char * ballsChoicesLabels[OPTIONS_BALLS_COUNT] = {"Classic", "Smiley"}; 
+    char * stylusmodeChoicesLabels[OPTIONS_STYLUSMODE_COUNT] = {"Click", "Stretch"};
     
     u8 y = 40, lineHeight = 12;
     
@@ -172,10 +174,10 @@ void msg_optionsValues_en(u8 * options, u8 selectedOption)
 
 void msg_optionsValues_fr(u8 * options, u8 selectedOption)
   {
-    char * soundfxChoicesLabels[2] = {"Oui", "Non"}; 
-    char * speedChoicesLabels[3] = {"Lent", "Moyen", "Rapide"}; 
-    char * ballsChoicesLabels[2] = {"Classique", "Smiley"}; 
-    char * stylusmodeChoicesLabels[2] = {"Clic", "Stretch"};
+    char * soundfxChoicesLabels[OPTIONS_SOUNDFX_COUNT] = {"Oui", "Non"}; 
+    char * speedChoicesLabels[OPTIONS_SPEED_COUNT] = {"Lent", "Moyen", "Rapide"}; 
+    char * ballsChoicesLabels[OPTIONS_BALLS_COUNT] = {"Classique", "Smiley"}; 
+    char * stylusmodeChoicesLabels[OPTIONS_STYLUSMODE_COUNT] = {"Clic", "Stretch"};
     
     u8 y = 40, lineHeight = 12;
     
@@ -382,4 +384,34 @@ void msg_highscores_fr(u8 blink, score * highscores)
             PA_16cText(1, 168, y, 239, y+20, "?", 1, 5, 100);
           }
       }
+  }
+
+void msg_level_choice_en(u8 level)
+  {
+    char str[20];
+    u8 y = 90;
+    
+    PA_ClearBg(0, 1);
+    
+    PA_Init16cBg(0, 0);
+    
+    PA_16cTextAlign(ALIGN_CENTER);
+    PA_16cText(0, 0, y, 255, 191, "<                           >", 1, 5, 100);
+    sprintf(str, "Level %d", level);
+    PA_16cText(0, 0, y, 255, 191, str, 1, 5, 100);
+  }
+
+void msg_level_choice_fr(u8 level)
+  {
+    char str[20];
+    u8 y = 90;
+    
+    PA_ClearBg(0, 1);
+    
+    PA_Init16cBg(0, 0);
+    
+    PA_16cTextAlign(ALIGN_CENTER);
+    PA_16cText(0, 0, y, 255, 191, "<                           >", 1, 5, 100);
+    sprintf(str, "Niveau %d", level);
+    PA_16cText(0, 0, y, 255, 191, str, 1, 5, 100);
   }
