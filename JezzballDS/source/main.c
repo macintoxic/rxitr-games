@@ -142,6 +142,7 @@ int main(int argc, char ** argv)
     // PA_SplashBlue();
 
     PA_LoadSpritePal(0, 0, (void*) sprite0_Pal);
+    PA_LoadSpritePal(0, 1, (void*) sprite1_Pal);
 
     initMenu();
     
@@ -280,10 +281,46 @@ void menu(void)
 
 void menuPlay(void)
   {
+    level = saveData.preferred_level;
+    if (saveData.highest_level > 1)
+      {
+        fadeOut(1,1);
+        destroyBalls();
+        messages.level_choice(level);
+        fadeIn(1,1);
+        
+        PA_WaitForVBL();
+        while (1)
+          {
+            if (Pad.Newpress.Left || Pad.Newpress.Right)
+              {
+                s16 lev = level - 1;
+                
+                lev += saveData.highest_level + Pad.Newpress.Right - Pad.Newpress.Left;
+                lev %= saveData.highest_level;
+                messages.level_choice(level = lev + 1);
+              }
+            else if (Pad.Newpress.A)
+              {
+                saveData.preferred_level = level;
+                writeSaveData();
+                break;
+              }
+            else if (Pad.Newpress.B)
+              {
+                initMenu();
+                return;
+              }
+            
+            PA_WaitForVBL();
+          }
+      }
+    
+    
     inMenu = 0;
     fadeOut(1,1);
     destroyBalls();
-    initLevel(level = 1);
+    initLevel(level);
     fadeIn(1,1);
     PA_VBLCounterStart(0);
   }
@@ -483,6 +520,8 @@ void loadSaveData(void)
           saveData.highscores[i].level = 0;
           saveData.highscores[i].score = 0;
         }
+        saveData.highest_level = 1;
+        saveData.preferred_level = 1;
       }
     
     updateSpeed();
@@ -845,7 +884,7 @@ void fillWall(wall * wall, u16 tilenum, u8 spritenum)
         
         for (y=start; y!=end; y+=step)
           {
-            PA_SetMapTile(0, 1, x, y, tilenum);
+            PA_SetMapTile(0, 1, x, y, tilenum == TILE_DEFAULT ? background_Map[y*width+x] : tilenum);
             collision[y*width+x] = tilenum;
             if (tilenum == TILE_CLEARED)
               {
@@ -887,7 +926,7 @@ void initBalls(void* obj_data, s16 lastframe)
         balls[i].vx = balls[i].x << 8;
         balls[i].vy = balls[i].y << 8;
         
-        PA_CreateSprite(0, i, obj_data, OBJ_SIZE_8X8, 1 , 0, balls[i].x, balls[i].y);
+        PA_CreateSprite(0, i, obj_data, OBJ_SIZE_8X8, 1, 0, balls[i].x, balls[i].y);
         
         PA_SetSpritePrio(0, i, 1);
         PA_StartSpriteAnim(0, i, 0, lastframe, 16);
@@ -902,11 +941,11 @@ void initWbd(void)
     wbd.y = 88;
     wbd.angle = 0;
 
-    PA_CreateSprite(0, SPRITE_BLUE, (void*) blue_Sprite, OBJ_SIZE_8X8, 1, 0, -8, -8);
+    PA_CreateSprite(0, SPRITE_BLUE, (void*) blue_Sprite, OBJ_SIZE_8X8, 1, 1, -8, -8);
     PA_SetSpritePrio(0, SPRITE_BLUE, 1);
-    PA_CreateSprite(0, SPRITE_RED, (void*) red_Sprite, OBJ_SIZE_8X8, 1, 0, -8, -8);
+    PA_CreateSprite(0, SPRITE_RED, (void*) red_Sprite, OBJ_SIZE_8X8, 1, 1, -8, -8);
     PA_SetSpritePrio(0, SPRITE_RED, 1);
-    PA_CreateSprite(0, SPRITE_WBD, (void*) wbd_Sprite, OBJ_SIZE_32X32,1 , 0, wbd.x - 8, wbd.y - 8);
+    PA_CreateSprite(0, SPRITE_WBD, (void*) wbd_Sprite, OBJ_SIZE_32X32,1 , 1, wbd.x - 8, wbd.y - 8);
     PA_SetSpritePrio(0, SPRITE_WBD, 1);
     PA_StartSpriteAnim(0, SPRITE_WBD, 0, 5, 18);
     
@@ -1128,6 +1167,11 @@ void checkIfWin(void)
         
         levelScore += bonus;
         
+        if (level + 1 > saveData.highest_level)
+          {
+            saveData.highest_level = level + 1;
+            writeSaveData();
+          }
         messages.levelcomplete();
         levelComplete = 1;
       }
@@ -1267,9 +1311,8 @@ void initMenu(void)
     
     
     
-    nbBalls = 2;
     u8 i;
-    for (i=0; i<nbBalls; i++)
+    for (i=0; i<2; i++)
       {
         PA_CreateSprite(0, i, obj_data, OBJ_SIZE_8X8, 1 , 0, -8, -8);
         PA_StartSpriteAnim(0, i, 0, lastframe, 16);

@@ -43,6 +43,7 @@ typedef struct
     void (*highscores)(u8 blink, score * highscores);
     void (*newhighscore)(void);
     void (*update_score)(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);
+    void (*level_choice)(u8 level);
 } l18n;
 
 void initLang(l18n * messages);
@@ -58,6 +59,7 @@ void msg_title_en(void);
 void msg_about_en(void);
 void msg_highscores_en(u8 blink, score * highscores);
 void msg_newhighscore_en(void);
+void msg_level_choice_en(u8 level);
 
 void msg_menu_fr(void);
 void msg_options_fr(void);
@@ -70,6 +72,7 @@ void msg_title_fr(void);
 void msg_about_fr(void);
 void msg_highscores_fr(u8 blink, score * highscores);
 void msg_newhighscore_fr(void);
+void msg_level_choice_fr(u8 level);
 
 void msg_none(void);
 void msg_update_score(u8 level, u8 lives, u8 complete, s16 timeLeft, u32 score, u32 bonus);

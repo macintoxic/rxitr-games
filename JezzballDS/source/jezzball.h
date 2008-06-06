@@ -18,25 +18,25 @@
 #ifndef JEZZBALL_H
 #define JEZZBALL_H
 
-#define JEZZBALLDS_VERSION "version 1.2.1"
+#define JEZZBALLDS_VERSION "version 1.3.0"
 
 
 // save
 #define MAX_NAME_LEN 15
 #define NB_HIGHSCORES 10
 // save compatibility
-#define SAVE_SIGNATURE "JezzballDS_1.1.0"
+#define SAVE_SIGNATURE "JezzballDS_1.3.0"
 
 
 #define BG_INFO_TYPE 0
 #define BG_INFO_WIDTH 1
 #define BG_INFO_HEIGHT 2
 
-#define MAX_NB_BALLS 100
+#define MAX_NB_BALLS 125
 
-#define SPRITE_WBD 101
-#define SPRITE_BLUE 102
-#define SPRITE_RED 103
+#define SPRITE_WBD 125
+#define SPRITE_BLUE 126
+#define SPRITE_RED 127
 
 #define TILE_DEFAULT background_Map[1020]
 #define TILE_CLEARED background_Map[1021]
@@ -98,6 +98,8 @@ typedef struct
   {
     u8 options[OPTIONS_COUNT];
     score highscores[NB_HIGHSCORES];
+    u8 highest_level;
+    u8 preferred_level;
   } save;
 
 typedef struct
