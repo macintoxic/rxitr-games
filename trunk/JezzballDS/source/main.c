@@ -58,8 +58,7 @@ void menuOptions(void);
 void menuAbout(void);
 
 void play(void);
-void setPause(bool pause);
-void switchPause(void);
+void setPause();
 
 void fadeIn(u8 screen0, u8 screen1);
 void fadeOut(u8 screen0, u8 screen1);
@@ -91,7 +90,7 @@ u16 time4lvl;
 s16 timeLeft;
 
 u8 language;
-u8 inPause = 0, complete = 0, gameover = 0, levelComplete = 0, inMenu = 0, currentMenuItem = 0, libfatOK = 0;
+u8 complete = 0, gameover = 0, levelComplete = 0, inMenu = 0, currentMenuItem = 0, libfatOK = 0;
 
 u16 tilesToClear;
 
@@ -159,18 +158,14 @@ int main(int argc, char ** argv)
           {
             // in game
             
-            if (!inPause && !gameover && !levelComplete && !inMenu)
+            if (!gameover && !levelComplete && !inMenu)
               {
                 play();
               }
     
-            if (!gameover && !levelComplete && !inMenu && Pad.Newpress.Start)
+            if (!levelComplete && (PA_LidClosed() || Pad.Newpress.Start))
               {
-                switchPause();
-              }
-            if (!levelComplete && PA_LidClosed())
-              {
-                setPause(true);
+                setPause();
               }
     
             if (gameover && (Pad.Newpress.A || Stylus.Newpress))
@@ -203,24 +198,51 @@ int main(int argc, char ** argv)
     return 0;
   } // End of main()
 
-void switchPause(void)
+void setPause()
   {
-    setPause(!inPause);
-  }
-
-void setPause(bool pause)
-  {
-    if (pause)
+    bool quit = 0;
+    PA_VBLCounterPause(0);
+    messages.pause(quit);
+    
+    PA_WaitForVBL();
+    
+    while (1)
       {
-        inPause = 1;
-        PA_VBLCounterPause(0);
-        messages.pause();
-      }
-    else
-      {
-        inPause = 0;
-        PA_VBLCounterUnpause(0);
-        msg_none();
+        if (Pad.Newpress.Down || Pad.Newpress.Up)
+        {
+          quit = !quit;
+          messages.pause(quit);
+        }
+        
+        if (Pad.Newpress.A)
+          {
+            if (quit)
+              {
+                fadeOut(1,1);
+                destroyBalls();
+                destroyWbd();
+                gameover = 0;
+                totalScore = 0;
+                initMenu();
+                fadeIn(1,1);
+                break;
+              }
+            else
+              {
+                PA_VBLCounterUnpause(0);
+                messages.none();
+                break;
+              }
+          }
+        
+        if (Pad.Newpress.Start)
+          {
+            PA_VBLCounterUnpause(0);
+            messages.none();
+            break;
+          }
+        
+        PA_WaitForVBL();
       }
   }
 
@@ -443,6 +465,7 @@ void promptHighscore(void)
                 messages.newhighscore();
                 PA_WaitFor(Pad.Newpress.A || Stylus.Newpress);
                 
+                messages.none();
                 PA_InitCustomKeyboard(0, keyboardcustom);
                 PA_KeyboardIn(24, 95);
                 
@@ -1309,10 +1332,9 @@ void initMenu(void)
     messages.menu();
     messages.highscores(-1, saveData.highscores);
     
-    
-    
     u8 i;
-    for (i=0; i<2; i++)
+    nbBalls = 2;
+    for (i=0; i<nbBalls; i++)
       {
         PA_CreateSprite(0, i, obj_data, OBJ_SIZE_8X8, 1 , 0, -8, -8);
         PA_StartSpriteAnim(0, i, 0, lastframe, 16);
