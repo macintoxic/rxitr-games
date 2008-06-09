@@ -59,17 +59,22 @@ void initLang(l18n * messages)
       }
     
     PA_16cCustomFont(5, smallfont);
-    PA_LoadPal16(PAL_BG1, 15, smallfont_Pal);
   }
 
 void msg_none(void)
   {
     PA_HideBg(0, 0);
+    PA_HideBg(0, 2);
   }
 
 void msg_gameover_en(void)
   {
     PA_EasyBgLoad(0, 0, msg_en_gameover);
+  }
+
+void msg_gameover_fr(void)
+  {
+    PA_EasyBgLoad(0, 0, msg_fr_gameover);
   }
 
 void msg_menu_en(void)
@@ -200,11 +205,6 @@ void msg_optionsValues_fr(u8 * options, u8 selectedOption)
     PA_16cText(0, 16, 175, 231, 191, "Appuyez sur A pour appliquer\nou sur B pour annuler", 1, 0, 100);
   }
 
-void msg_gameover_fr(void)
-  {
-    PA_EasyBgLoad(0, 0, msg_fr_gameover);
-  }
-
 void msg_levelcomplete_en(void)
   {
     PA_EasyBgLoad(0, 0, msg_en_levelcomplete);
@@ -215,14 +215,28 @@ void msg_levelcomplete_fr(void)
     PA_EasyBgLoad(0, 0, msg_fr_levelcomplete);
   }
 
-void msg_pause_en(void)
+void msg_pause_en(bool quit)
   {
-    PA_EasyBgLoad(0, 0, msg_en_pause);
+    if (quit)
+      {
+        PA_EasyBgLoad(0, 0, msg_en_pause1);
+      }
+    else
+      {
+        PA_EasyBgLoad(0, 0, msg_en_pause0);
+      }
   }
 
-void msg_pause_fr(void)
+void msg_pause_fr(bool quit)
   {
-    PA_EasyBgLoad(0, 0, msg_fr_pause);
+    if (quit)
+      {
+        PA_EasyBgLoad(0, 0, msg_fr_pause1);
+      }
+    else
+      {
+        PA_EasyBgLoad(0, 0, msg_fr_pause0);
+      }
   }
 
 void msg_newhighscore_en(void)
